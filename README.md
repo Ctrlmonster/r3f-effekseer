@@ -2,8 +2,8 @@
 
 
 ### How to use 
-Effects are currently available in the global simulation.effects object.
-You can execute them like this:
+Effects are currently available in the global `simulation.effects` object
+(available in the console). You can execute effects like this:
 ```js
 simulation.playEffect("Laser01");
 ```
