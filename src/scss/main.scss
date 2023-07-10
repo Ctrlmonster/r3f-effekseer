@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+// =========================================================================================
+// Variables
+$test-color: #ff00d5;
+
+// =========================================================================================
+// some defaults / resets
+
+canvas {
+  display: block;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+
+// =========================================================================================
+// Container classes
+
+.AppContainer {
+  height: 100vh;
+}
+
+.Container {
+  height: 100vh;
+  width: 100%;
+}
+
+// =========================================================================================
+// interaction classes
+
+// can't copy text, nor click or hover
+.interaction-none {
+  user-select: none;
+  pointer-events: none;
+}
+
+// can't copy text, but can click and hover
+.interaction-button {
+  user-select: none;
+  pointer-events: all;
+}
+
+// no interaction via touch devices
+.touch-none {
+  touch-action: none;
+}
+
+// =========================================================================================
+// text
+
+// useful for bright font on bright background
+.text-outline {
+  text-shadow: -1px 1px 2px #000,1px 1px 2px #000,1px -1px 0 #000, -1px -1px 0 #000
+}
+.debug-font {
+  @apply font-bold tracking-widest uppercase px-2 py-1;
+}
+
+
+// =========================================================================================
+
+// Some Buttons
+
+
+.btn {
+  @apply font-bold py-4 px-8 rounded flex
+  items-center justify-center max-h-10
+  min-w-max interaction-button text-xl;
+}
+
+.btn:hover {
+  @apply cursor-pointer;
+}
+
+.btn-blue {
+  @apply bg-blue-500 text-white;
+}
+
+.btn-blue:hover {
+  @apply bg-blue-700;
+}
+
+.btn-red {
+  @apply bg-red-500 text-white;
+}
+
+.btn-red:hover {
+  @apply bg-red-700;
+}
+
+// =========================================================================================
