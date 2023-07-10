@@ -28,6 +28,6 @@ the original demo in browser.
 ### Effekseer Resources
 * website: https://effekseer.github.io/en/
 * effekseer webgl: https://github.com/effekseer/EffekseerForWebGL
-
+* effekseer post processing pass: https://github.com/effekseer/EffekseerForWebGL/blob/master/tests/post_processing_threejs.html
 
 
