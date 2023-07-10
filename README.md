@@ -9,9 +9,13 @@ simulation.playEffect("Laser01");
 ```
 
 ### Debugging
-effekseer is currently being initialized inside `SceneContainer.tsx`,
+Right now there is an issue with particle alpha / texture backgrounds. 
+Effekseer is currently being initialized inside `SceneContainer.tsx`,
 check out the Simulation class and compare it with 
-`references/html-demo/src/index.html` 
+`references/html-demo/src/index.html` to see if you can spot any mistakes.
+Otherwise, I'm assuming this is related to r3f / different three version being
+used in the vanilla effekseer demo.
+
 
 ### Reference
 I've included the Effekseer vanilla three demo for reference inside
