@@ -5,6 +5,7 @@ import {useControls} from "leva";
 import {Perf} from "r3f-perf";
 import {SceneContainer} from "./SceneContainer";
 import {useRenderOnDemand} from "../helper/hooks/useRenderOnDemand";
+import {EffectButtons} from "../gui/EffectButtons";
 
 
 // ------------------------------------------------------------------
@@ -29,17 +30,28 @@ export function CanvasContainer() {
     enableDynamicDpr: false,
   });
   // -------------------------------------------------------------------
+  const [effects, setEffects] = useState<string[]>([]);
+  // -------------------------------------------------------------------
 
   return (
-    <Canvas dpr={dpr}
-            frameloop={(renderOnDemand) ? "demand" : "always"}
-            shadows={true}>
+    <>
+      <Canvas dpr={dpr}
+              frameloop={(renderOnDemand) ? "demand" : "always"}
+              shadows={true}
+              gl={{
+                premultipliedAlpha: true
+              }}
+      >
 
-      <PerformanceMonitor onChange={({factor}) => enableDynamicDpr && setDpr(updateDpr(factor))}>
-        <SceneContainer/>
-      </PerformanceMonitor>
+        <PerformanceMonitor onChange={({factor}) => enableDynamicDpr && setDpr(updateDpr(factor))}>
+          <SceneContainer setEffects={setEffects}/>
+        </PerformanceMonitor>
 
-      {showPerf && <Perf position="bottom-left"/>}
-    </Canvas>
+
+        {showPerf && <Perf position="bottom-left"/>}
+      </Canvas>
+
+      <EffectButtons effects={effects}/>
+    </>
   )
 }

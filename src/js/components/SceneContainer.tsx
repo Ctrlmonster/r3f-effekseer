@@ -27,7 +27,7 @@ class Simulation {
   // -------------------------------------------------------------------------
 
 
-  init(gl: WebGLRenderer, scene: Scene, camera: Camera, clock: Clock) {
+  init(gl: WebGLRenderer, scene: Scene, camera: Camera, clock: Clock, setEffects: (effects: string[]) => void) {
     // init your imperative code here
     this.camera = camera;
     this.clock = clock;
@@ -60,6 +60,8 @@ class Simulation {
       this.effects["Laser02"] = this.context.loadEffect("../Resources/Laser02.efk");
       this.effects["Simple_Ring_Shape1"] = this.context.loadEffect("../Resources/Simple_Ring_Shape1.efk");
       this.effects["block"] = this.context.loadEffect("../Resources/block.efk");
+
+      setEffects(Object.keys(this.effects));
 
 
     }, () => {
@@ -104,7 +106,7 @@ class Simulation {
 
 }
 
-const simulation = new Simulation();
+export const simulation = new Simulation();
 console.log(simulation.effects);
 // @ts-ignore
 window.simulation = simulation
@@ -115,13 +117,13 @@ window.simulation = simulation
 // ================================================================================================================
 
 
-export function SceneContainer() {
+export function SceneContainer({setEffects}: { setEffects: (effects: string[]) => void }) {
   const state = useThree(({gl, scene, camera, clock}) => ({gl, scene, camera, clock}));
 
   useEffect(() => {
     // init the simulation - this is how you get access 
     // to scene, camera, renderer etc. from your imperative code.
-    simulation.init(state.gl, state.scene, state.camera, state.clock);
+    simulation.init(state.gl, state.scene, state.camera, state.clock, setEffects);
     return () => simulation.destroy();
   }, []);
 
