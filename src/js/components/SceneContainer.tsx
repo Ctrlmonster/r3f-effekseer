@@ -10,6 +10,7 @@ console.log(effekseer);
 
 import wasmUrl from "../effects/effekseer.wasm?url";
 import {EffekseerContext, EffekseerEffect} from "effekseer";
+import {useControls} from "leva";
 
 
 class Simulation {
@@ -22,7 +23,7 @@ class Simulation {
 
   // fast rendering by skipping state fetching.
   // If there is a problem with the drawing, please set this flag to false.
-  fastRenderMode = false;
+  fastRenderMode = true;
 
   // -------------------------------------------------------------------------
 
@@ -37,9 +38,7 @@ class Simulation {
 
     effekseer.initRuntime(wasmUrl, () => {
       this.context = effekseer.createContext();
-      this.context.init(gl.getContext(), {
-        enablePremultipliedAlpha: true,
-      });
+      this.context.init(gl.getContext());
       this.effects["Laser01"] = this.context.loadEffect(
         "../Resources/Laser01.efk",
         1.0,
@@ -133,9 +132,17 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
     simulation.update(delta);
   }, 1)
 
+  // leva controls for scene background color
+  const {color} = useControls("Background", {
+    color: "#d4d4d4"
+  })
+
 
   return (
     <>
+
+      <color attach="background" args={[color]}/>
+
       {/* YOUR SCENE HERE  -------------------------------------------------*/
         <>
           <mesh position={[0, 0, -1]} scale={[0.5, 0.5, 0.5]} castShadow={true} receiveShadow={true}>
