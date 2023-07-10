@@ -2,20 +2,23 @@
 
 
 ### How to use 
+```
+npm install
+npm start
+```
 Effects are currently available in the global `simulation.effects` object
 (available in the console). You can execute effects like this:
 ```js
 simulation.playEffect("Laser01");
 ```
 
-### Debugging
-Right now there is an issue with particle alpha / texture backgrounds. 
-Effekseer is currently being initialized inside `SceneContainer.tsx`,
-check out the Simulation class and compare it with 
-`references/html-demo/src/index.html` to see if you can spot any mistakes.
-Otherwise, I'm assuming this is related to r3f / different three version being
-used in the vanilla effekseer demo.
+### Known issues:
+There needs to be a background color assigned to the scene, or else 
+black color in the particle images are not rendered transparently.
 
+### Next Step:
+The Effekseer render pass needs to be adapted to be compatible
+with the pmndrs PostProcessing lib (see Resources below)
 
 ### Reference
 I've included the Effekseer vanilla three demo for reference inside
