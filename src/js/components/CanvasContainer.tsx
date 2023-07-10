@@ -5,8 +5,7 @@ import {useControls} from "leva";
 import {Perf} from "r3f-perf";
 import {SceneContainer} from "./SceneContainer";
 import {useRenderOnDemand} from "../helper/hooks/useRenderOnDemand";
-import {TextureEncoding} from "three";
-import {sRGBEncoding} from "three/src/constants";
+
 
 // ------------------------------------------------------------------
 // Initial dpr values for performance monitoring
@@ -34,14 +33,7 @@ export function CanvasContainer() {
   return (
     <Canvas dpr={dpr}
             frameloop={(renderOnDemand) ? "demand" : "always"}
-            shadows={true}
-            gl={{
-              powerPreference: "high-performance",
-              stencil: true, // stencil can be disabled unless you have need for it
-              depth: true, // set to false if you will enable postprocessing
-              antialias: true, // set to false if you will enable postprocessing
-            }}
-    >
+            shadows={true}>
 
       <PerformanceMonitor onChange={({factor}) => enableDynamicDpr && setDpr(updateDpr(factor))}>
         <SceneContainer/>
