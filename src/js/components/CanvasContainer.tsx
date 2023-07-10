@@ -21,7 +21,7 @@ const updateDpr = (factor: number) => {
 
 
 export function CanvasContainer() {
-  const renderOnDemand = useRenderOnDemand(true);
+  const renderOnDemand = useRenderOnDemand(false);
   // ------------------------------------------------------------------
   // dpr and app controls
   const [dpr, setDpr] = useState(START_DPR);
