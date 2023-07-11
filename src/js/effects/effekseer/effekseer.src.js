@@ -1000,7 +1000,7 @@ export const effekseer = (() => {
     }
 
     /**
-     * Stop the all effects.
+     * Stop the all effekseer.
      */
     stopAll() {
       Core.StopAllEffects(this.nativeptr);
@@ -1318,7 +1318,7 @@ export const effekseer = (() => {
     }
 
     /**
-     * Stop the all effects.
+     * Stop the all effekseer.
      */
     stopAll() {
       console.warn('deprecated : please use through createContext.');

@@ -150,7 +150,7 @@ declare namespace effekseer {
     export function play(effect: EffekseerEffect, x: number, y: number, z: number): EffekseerHandle;
 
     /**
-     * Stop the all effects.
+     * Stop the all effekseer.
      */
     export function stopAll(): void;
 
@@ -285,7 +285,7 @@ declare namespace effekseer {
         play(effect: EffekseerEffect, x: number, y: number, z: number): EffekseerHandle;
 
         /**
-         * Stop the all effects.
+         * Stop the all effekseer.
          */
         stopAll(): void;
 
@@ -459,6 +459,6 @@ declare namespace effekseer {
     }
 }
 
-declare module "effekseer" {
+declare module "src/js/effects/effekseer/effekseer" {
     export = effekseer;
 }

@@ -1107,7 +1107,7 @@ var effekseer = function () {
       }
 
       /**
-       * Stop the all effects.
+       * Stop the all effekseer.
        */
 
     }, {
@@ -1512,7 +1512,7 @@ var effekseer = function () {
       }
 
       /**
-       * Stop the all effects.
+       * Stop the all effekseer.
        */
 
     }, {
