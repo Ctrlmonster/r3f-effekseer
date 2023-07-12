@@ -52,7 +52,9 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
       <color attach="background" args={[color]}/>
 
       <>
-        <mesh position={[0, 0, -1]} scale={[1, 1, 1]} castShadow={true} receiveShadow={true}>
+        <mesh position={[0, 0, -1]} scale={[1, 1, 1]}
+              castShadow={true} receiveShadow={true}
+              onClick={() => laserRef.current?.play()}>
           <sphereGeometry/>
           <meshStandardMaterial color="orange"/>
 
