@@ -44,7 +44,7 @@ black color in the particle images are not rendered transparently.
 ### Next Step:
 * The Effekseer render pass needs to be adapted to be compatible
 with the pmndrs PostProcessing lib (see Resources below)
-* Figure out how this could be packaged as library
+* Figure out how this could be packaged into a library
 
 ### Reference
 I've included the Effekseer vanilla three demo for reference inside
