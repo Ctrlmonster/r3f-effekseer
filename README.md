@@ -17,7 +17,7 @@ const laserRef = useRef<EffectPlayer>(null);
 
 // this will also play automatically on mount because of 'playOnMount' prop
 return (
-  <mesh position={[0, 0, -1]} onClick={() => {laserRef.current?.play()}}>
+  <mesh position={[0, 0, -1]} onClick={() => laserRef.current?.play()}>
       <sphereGeometry/>
       <meshStandardMaterial color="orange"/>
     
