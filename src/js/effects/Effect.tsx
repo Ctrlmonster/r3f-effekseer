@@ -5,12 +5,14 @@ import React, {
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
-  useRef
+  useRef, useState
 } from "react";
-import {Group, Vector3} from "three";
+import {Group, Object3D, Vector3} from "three";
 import {EffekseerContextProvider, EffekseerReactContext} from "./EffectContext";
 import {EffekseerEffect, EffekseerHandle} from "src/js/effects/effekseer/effekseer";
 import {useFrame} from "@react-three/fiber";
+import {suspend} from "suspend-react";
+import {EffectPlayer} from "./EffectPlayer";
 
 
 export type EffectProps = {
@@ -20,8 +22,8 @@ export type EffectProps = {
   rotation?: [number, number, number],
   scale?: [number, number, number],
   playOnMount?: boolean,
-  disposeOnUnmount?: boolean,
-
+  dispose?: null,
+  debug?: boolean,
   onload?: (() => void) | undefined,
   onerror?: ((reason: string, path: string) => void) | undefined,
   redirect?: ((path: string) => string) | undefined,
@@ -32,58 +34,58 @@ export const Effect = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
                                     onerror, onload, redirect,
-                                    playOnMount, disposeOnUnmount
-                                  }: EffectProps, ref: ForwardedRef<EffekseerEffect>) => {
+                                    playOnMount, dispose, debug
+                                  }: EffectProps, ref: ForwardedRef<EffectPlayer>) => {
 
   const group = useRef<Group>(null!);
   const worldPos = useRef(new Vector3());
   const worldScale = useRef(new Vector3());
 
-  const {manager} = useContext(EffekseerReactContext);
-  const effectRef = useRef<EffekseerEffect | null>(null);
-  const effectHandle = useRef<EffekseerHandle | null>(null);
+  const {manager} = useContext(EffekseerReactContext); // do you add an error if the context is missing?
 
-  // TODO: imperative ref not working yet - likely needs suspense
+  const effectPlayer = suspend(async () => {
+    const effect = await manager.loadEffect(name, src, 1, onload, onerror, redirect);
+    return new EffectPlayer(name, effect, manager);
+  }, [src, name]);
 
-  useLayoutEffect(() => {
-    console.log("in effect ule", name);
+  useImperativeHandle(ref, () => effectPlayer, []);
 
-    const asyncLoading = async () => {
-      // add error for missing context?
-      effectRef.current = await manager.loadEffect(name, src, 1, onload, onerror, redirect);
-
-      if (playOnMount) {
-        effectHandle.current = manager.playEffect(name);
-        // effectHandle.current is null for the first effect - why is that?
-        console.log(effectRef.current);
-        console.log(effectHandle.current);
-      }
+  useEffect(() => {
+    if (playOnMount) {
+      //effectHandle.current = manager.playEffect(name);
+      effectPlayer?.play();
     }
-    asyncLoading();
-
     return () => {
-      if (disposeOnUnmount) {
+      if (dispose != null) {
         manager.disposeEffect(name);
       }
     }
   }, []);
 
+  // TODO: if the user sets the position on the player ref, then we need to update the group position
 
   useFrame(() => {
-    if (effectHandle.current) {
+    if (effectPlayer) {
       const pos = group.current.getWorldPosition(worldPos.current);
-      effectHandle.current.setLocation(pos.x, pos.y, pos.z);
+      effectPlayer.setPosition(pos.x, pos.y, pos.z);
 
       const rot = group.current.rotation;
-      //const rot = group.current.getWorldDirection(worldPos.current);
-      effectHandle.current.setRotation(rot.x, rot.y, rot.z);
+      effectPlayer.setRotation(rot.x, rot.y, rot.z);
 
       const scale = group.current.getWorldScale(worldScale.current);
-      effectHandle.current.setScale(scale.x, scale.y, scale.z);
+      effectPlayer.setScale(scale.x, scale.y, scale.z);
     }
   });
 
   return (
-    <group ref={group} position={position} rotation={rotation} scale={scale}/>
+    <group ref={group} position={position} rotation={rotation} scale={scale}>
+      {debug ?
+        <mesh rotation={rotation}>
+          <coneGeometry args={[1, 1, 6, 1]}/>
+          <meshBasicMaterial color={"#aa00ff"} wireframe={true}/>
+        </mesh>
+        : null
+      }
+    </group>
   )
 });

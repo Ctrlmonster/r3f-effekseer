@@ -3,7 +3,7 @@ import {Camera, Clock, Scene, WebGLRenderer} from "three";
 import {EffekseerContext, EffekseerEffect} from "src/js/effects/effekseer/effekseer";
 
 
-type EffectInitializationPackage = {
+type EffectLoadingPackage = {
   name: string, url: string, scale: number,
   onload: (() => void) | undefined,
   onerror: ((reason: string, path: string) => void) | undefined,
@@ -23,11 +23,11 @@ export class EffekseerManager {
 
   // fast rendering by skipping state fetching.
   // If there is a problem with the drawing, please set this flag to false.
-  fastRenderMode = true;
+  fastRenderMode = true; // TODO: needs to be exposed to RC
   initialized = false;
 
-  effectInitializationQueue = new Set<EffectInitializationPackage>();
-  loadingEffectByName = new Map<string, {
+  effectLoadingQueue = new Set<EffectLoadingPackage>();
+  loadingCallbacksByName = new Map<string, {
     success: () => void;
     failure: (m: string, url: string) => void;
   }[]>();
@@ -59,7 +59,7 @@ export class EffekseerManager {
       // The effect will be loaded as soon as the manager is done initializing.
       // The promise will be resolved when the effect is loaded.
       return new Promise<EffekseerEffect>((resolve, reject) => {
-        this.effectInitializationQueue.add({
+        this.effectLoadingQueue.add({
           name,
           url,
           scale,
@@ -72,31 +72,29 @@ export class EffekseerManager {
     }
   }
 
-  #addEffect(args: EffectInitializationPackage) {
+  #addEffect(args: EffectLoadingPackage) {
     const {name, url, scale, onload, onerror, redirect, resolve, reject} = args;
     if (this.effects[name]) {
       console.log(`effect ${name} is already loaded`);
       resolve(this.effects[name]);
 
-      const callbacks = this.loadingEffectByName.get(name);
+      const callbacks = this.loadingCallbacksByName.get(name);
       if (callbacks) {
         for (const promise of callbacks) {
           promise.success();
         }
       }
-      this.loadingEffectByName.delete(name);
+      this.loadingCallbacksByName.delete(name);
       return;
     }
-
 
     // We don't want to start loading the same effect multiple times,
     // that's why we check if it's already loading and in that case
     // just pass the success / failure callbacks to the loading callback
-
-    if (this.loadingEffectByName.has(name)) {
+    if (this.loadingCallbacksByName.has(name)) {
       console.log(`effect ${name} is already loading`);
 
-      this.loadingEffectByName.get(name)!.push({
+      this.loadingCallbacksByName.get(name)!.push({
         success: () => {
           onload?.();
           resolve(this.effects[name]);
@@ -108,10 +106,10 @@ export class EffekseerManager {
       });
     }
 
-    // start a new loading process
+    // start a new loading process for this effect
     else {
       console.log(`start loading effect ${name}`);
-      this.loadingEffectByName.set(name, []);
+      this.loadingCallbacksByName.set(name, []);
 
 
       const effect = this.context.loadEffect(
@@ -123,21 +121,21 @@ export class EffekseerManager {
           this.effects[name] = effect;
           onload?.();
           // get all other promises that are waiting for this effect to load and resolve them
-          const callbacks = this.loadingEffectByName.get(name);
-          if (callbacks) {
-            for (const promise of callbacks) {
-              promise.success();
+          const loadingCallbacks = this.loadingCallbacksByName.get(name);
+          if (loadingCallbacks) {
+            for (const callback of loadingCallbacks) {
+              callback.success();
             }
           }
-          this.loadingEffectByName.delete(name);
+          this.loadingCallbacksByName.delete(name);
           resolve(this.effects[name]);
         },
         (m, url) => {
           onerror?.(m, url);
-          const promises = this.loadingEffectByName.get(name);
-          if (promises) {
-            for (const promise of promises) {
-              promise.failure(m, url);
+          const loadingCallbacks = this.loadingCallbacksByName.get(name);
+          if (loadingCallbacks) {
+            for (const callback of loadingCallbacks) {
+              callback.failure(m, url);
             }
           }
           reject();
@@ -145,8 +143,6 @@ export class EffekseerManager {
         redirect
       );
     }
-
-
   }
 
 
@@ -159,18 +155,16 @@ export class EffekseerManager {
 
 
     effekseer.initRuntime(wasmUrl, () => {
-      this.context = effekseer.createContext(
-
-      );
+      this.context = effekseer.createContext();
       this.context.init(gl.getContext());
 
       if (this.fastRenderMode) {
         this.context.setRestorationOfStatesFlag(false);
       }
 
-      for (const effectInitPackage of this.effectInitializationQueue) {
+      for (const effectInitPackage of this.effectLoadingQueue) {
         this.#addEffect(effectInitPackage);
-        this.effectInitializationQueue.delete(effectInitPackage);
+        this.effectLoadingQueue.delete(effectInitPackage);
       }
 
       setEffects(this.effects, this.context);
@@ -183,7 +177,15 @@ export class EffekseerManager {
   }
 
   destroy() {
-    // destroy your imperative code here
+    if (this.context) {
+      // destroy all leftover effects
+      for (const effect of Object.keys(this.effects)) {
+        this.context.releaseEffect(effect);
+      }
+      // destroy the context
+      effekseer.releaseContext(this.context);
+      this.context = null!;
+    }
   }
 
   update(delta: number) {
