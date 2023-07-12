@@ -1,15 +1,6 @@
-import React, {
-  ForwardedRef,
-  forwardRef,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef, useState
-} from "react";
-import {Group, Object3D, Vector3} from "three";
-import {EffekseerContextProvider, EffekseerReactContext} from "./EffectContext";
-import {EffekseerEffect, EffekseerHandle} from "src/js/effects/effekseer/effekseer";
+import React, {ForwardedRef, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState} from "react";
+import {Group, Vector3} from "three";
+import {EffekseerReactContext} from "./EffectContext";
 import {useFrame} from "@react-three/fiber";
 import {suspend} from "suspend-react";
 import {EffectPlayer} from "./EffectPlayer";
@@ -30,6 +21,8 @@ export type EffectProps = {
 }
 
 
+// TODO:Current problem - the ref is being ovewritten
+
 export const Effect = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
@@ -43,10 +36,13 @@ export const Effect = forwardRef(({
 
   const {manager} = useContext(EffekseerReactContext); // do you add an error if the context is missing?
 
-  const effectPlayer = suspend(async () => {
-    const effect = await manager.loadEffect(name, src, 1, onload, onerror, redirect);
-    return new EffectPlayer(name, effect, manager);
+  const effect = suspend(async () => {
+    // it's always the same effectPlayer
+    return await manager.loadEffect(name, src, 1, onload, onerror, redirect);
   }, [src, name]);
+
+  const [effectPlayer] = useState(new EffectPlayer(name, effect, manager));
+
 
   useImperativeHandle(ref, () => effectPlayer, []);
 

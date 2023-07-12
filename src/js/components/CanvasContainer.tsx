@@ -30,7 +30,7 @@ export function CanvasContainer() {
     enableDynamicDpr: false,
   });
   // -------------------------------------------------------------------
-  const [effects, setEffects] = useState<string[]>([]);
+  const [effectNames, setEffectNames] = useState<string[]>([]);
   // -------------------------------------------------------------------
 
   return (
@@ -38,20 +38,17 @@ export function CanvasContainer() {
       <Canvas dpr={dpr}
               frameloop={(renderOnDemand) ? "demand" : "always"}
               shadows={true}
-              gl={{
-                premultipliedAlpha: true
-              }}
+              gl={{}}
       >
 
         <PerformanceMonitor onChange={({factor}) => enableDynamicDpr && setDpr(updateDpr(factor))}>
-          <SceneContainer setEffects={setEffects}/>
+          <SceneContainer setEffectNames={setEffectNames}/>
         </PerformanceMonitor>
-
 
         {showPerf && <Perf position="bottom-left"/>}
       </Canvas>
 
-      <EffectButtons effects={effects}/>
+      <EffectButtons effectNames={effectNames}/>
     </>
   )
 }

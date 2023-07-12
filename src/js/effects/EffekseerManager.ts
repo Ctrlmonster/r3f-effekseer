@@ -3,7 +3,7 @@ import {Camera, Clock, Scene, WebGLRenderer} from "three";
 import {EffekseerContext, EffekseerEffect} from "src/js/effects/effekseer/effekseer";
 
 
-type EffectLoadingPackage = {
+export type EffectLoadingPackage = {
   name: string, url: string, scale: number,
   onload: (() => void) | undefined,
   onerror: ((reason: string, path: string) => void) | undefined,
@@ -33,6 +33,7 @@ export class EffekseerManager {
   }[]>();
 
   // -------------------------------------------------------------------------
+  #setEffects: (effects: Record<string, EffekseerEffect>) => void = null!;
 
   async loadEffect(name: string, url: string, scale: number,
                    onload: (() => void) | undefined,
@@ -40,18 +41,15 @@ export class EffekseerManager {
                    redirect: ((path: string) => string) | undefined): Promise<EffekseerEffect> {
 
 
+    // Check if the manager is initialized, if it isn't this effect will be automatically
+    // loaded as soon the manager is ready.
+
+    // TODO: check if we can use this to preload instead and just resolve the promise when initialized
+    // effekseer.loadEffect()
+
     if (this.initialized) {
       return new Promise<EffekseerEffect>((resolve, reject) => {
-        this.#addEffect({
-          name,
-          url,
-          scale,
-          onload,
-          onerror,
-          redirect,
-          resolve,
-          reject
-        });
+        this.#addEffect({name, url, scale, onload, onerror, redirect, resolve, reject});
       });
     }
     // if the manager isn't done initializing
@@ -59,38 +57,23 @@ export class EffekseerManager {
       // The effect will be loaded as soon as the manager is done initializing.
       // The promise will be resolved when the effect is loaded.
       return new Promise<EffekseerEffect>((resolve, reject) => {
-        this.effectLoadingQueue.add({
-          name,
-          url,
-          scale,
-          onload,
-          onerror,
-          redirect,
-          resolve, reject
-        });
+        this.effectLoadingQueue.add({name, url, scale, onload, onerror, redirect, resolve, reject});
       });
     }
   }
 
   #addEffect(args: EffectLoadingPackage) {
     const {name, url, scale, onload, onerror, redirect, resolve, reject} = args;
+    // early return if the effect is already loaded
     if (this.effects[name]) {
-      console.log(`effect ${name} is already loaded`);
       resolve(this.effects[name]);
-
-      const callbacks = this.loadingCallbacksByName.get(name);
-      if (callbacks) {
-        for (const promise of callbacks) {
-          promise.success();
-        }
-      }
-      this.loadingCallbacksByName.delete(name);
       return;
-    }
+    } // _______________________________________________________________________
 
     // We don't want to start loading the same effect multiple times,
-    // that's why we check if it's already loading and in that case
-    // just pass the success / failure callbacks to the loading callback
+    // that's why we check if it's currently loading and in that case just
+    // pass the success / failure callbacks to the callback that will be
+    // executed when the previously started loading process finishes.
     if (this.loadingCallbacksByName.has(name)) {
       console.log(`effect ${name} is already loading`);
 
@@ -104,23 +87,22 @@ export class EffekseerManager {
           reject();
         }
       });
-    }
+    } // _______________________________________________________________________
 
-    // start a new loading process for this effect
+    // Start a new loading process for this effect
     else {
       console.log(`start loading effect ${name}`);
       this.loadingCallbacksByName.set(name, []);
-
-
       const effect = this.context.loadEffect(
         url,
         scale,
         // Packaging promise resolve and reject with user callbacks,
-        // this way we can resolve the promise when the effect is loaded.
+        // this way we resolve the promise when the effect is loaded.
         () => {
           this.effects[name] = effect;
           onload?.();
-          // get all other promises that are waiting for this effect to load and resolve them
+          resolve(this.effects[name]);
+          // get all other promises that are waiting for this effect to load and resolve them too
           const loadingCallbacks = this.loadingCallbacksByName.get(name);
           if (loadingCallbacks) {
             for (const callback of loadingCallbacks) {
@@ -128,17 +110,19 @@ export class EffekseerManager {
             }
           }
           this.loadingCallbacksByName.delete(name);
-          resolve(this.effects[name]);
+          console.log("loading completed");
+          this.#setEffects(this.effects);
         },
+        // same if the loading process failed - reject all promises
         (m, url) => {
           onerror?.(m, url);
+          reject();
           const loadingCallbacks = this.loadingCallbacksByName.get(name);
           if (loadingCallbacks) {
             for (const callback of loadingCallbacks) {
               callback.failure(m, url);
             }
           }
-          reject();
         },
         redirect
       );
@@ -146,7 +130,8 @@ export class EffekseerManager {
   }
 
 
-  init(gl: WebGLRenderer, scene: Scene, camera: Camera, clock: Clock, setEffects: (effects: Record<string, EffekseerEffect>, context: EffekseerContext) => void) {
+  init(gl: WebGLRenderer, scene: Scene, camera: Camera, clock: Clock,
+       setEffects: (effects: Record<string, EffekseerEffect>) => void) {
     // init your imperative code here
     this.camera = camera;
     this.clock = clock;
@@ -154,6 +139,7 @@ export class EffekseerManager {
     this.scene = scene;
 
 
+    // init and callback can also get separated, so the runTime could also be preloaded
     effekseer.initRuntime(wasmUrl, () => {
       this.context = effekseer.createContext();
       this.context.init(gl.getContext());
@@ -167,14 +153,17 @@ export class EffekseerManager {
         this.effectLoadingQueue.delete(effectInitPackage);
       }
 
-      setEffects(this.effects, this.context);
+      // we need to update the React context states whenever a new effect
+      // gets loaded, that's why save a reference to the setter here
+      setEffects(this.effects);
+      this.#setEffects = (effects) => setEffects({...effects});
 
       this.initialized = true;
     }, () => {
       console.log("Failed to initialize effekseer");
     });
-
   }
+
 
   destroy() {
     if (this.context) {
@@ -186,6 +175,8 @@ export class EffekseerManager {
       effekseer.releaseContext(this.context);
       this.context = null!;
     }
+    this.#setEffects = null!;
+    this.initialized = false;
   }
 
   update(delta: number) {
@@ -210,29 +201,17 @@ export class EffekseerManager {
 
 
   disposeEffect(name: string) {
-    if (this.effects[name]) {
+    if (this.effects && this.effects[name]) {
       this.context.releaseEffect(this.effects[name]);
       delete this.effects[name];
+      this.#setEffects(this.effects);
     } else {
       console.warn(`Effect ${name} not found`);
     }
   }
 
   playEffect(name: string) {
-    return this.context.play(this.effects[name], 0, 0, 0);
+    return this.context?.play(this.effects[name], 0, 0, 0);
   }
-
 }
 
-
-export type EffectPlayOptions = {
-  position?: [number, number, number],
-  targetPosition?: [number, number, number],
-  rotation?: [number, number, number],
-  scale?: [number, number, number],
-  speed?: number,
-  startFrame?: number,
-  endFrame?: number,
-  shown?: boolean,
-  // to be extended
-}

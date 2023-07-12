@@ -44,7 +44,7 @@ export class EffectPlayer {
   // --- setters for specific settings ---
 
   // TODO: optimize away these temporary arrays for functions that are to be called
-  //  every frame (i.e. transforms)
+  //  every frame (transforms)
 
   setPosition(x: number, y: number, z: number) {
     this.#setSetting("position", [x, y, z], () => this.latestHandle?.setLocation(x, y, z));

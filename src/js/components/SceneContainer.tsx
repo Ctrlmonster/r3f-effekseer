@@ -1,22 +1,23 @@
 import PostProcessing from "./PostProcessing";
 import {OrbitControls} from "@react-three/drei";
-import {useThree} from "@react-three/fiber";
 import {SceneLights} from "./SceneLights";
 import {ViewportHelper} from "../helper/ViewportHelper";
 import {useControls} from "leva";
 import {Effect} from "../effects/Effect";
-
-
-import blockUrl from "../../../Resources/block.efk?url";
-import laserUrl from "../../../Resources/Laser01.efk?url";
-import {EffekseerEffect} from "src/js/effects/effekseer/effekseer";
-import {Suspense, useEffect, useRef} from "react";
+import React, {Suspense, useContext, useEffect, useRef} from "react";
 import {EffekseerManager} from "../effects/EffekseerManager";
 import {Effekseer} from "../effects/EffekseerRC";
 import {EffectPlayer} from "../effects/EffectPlayer";
+import {EffekseerReactContext} from "../effects/EffectContext";
+
+import blockUrl from "../../../Resources/block.efk?url";
+import laser1Url from "../../../Resources/Laser01.efk?url";
+import laser2Url from "../../../Resources/Laser02.efk?url";
+import ribbonParentUrl from "../../../Resources/Simple_Ribbon_Parent.efk?url";
+import ribbonSwordUrl from "../../../Resources/Simple_Ribbon_Sword.efk?url";
 
 
-export function SceneContainer({setEffects}: { setEffects: (effects: string[]) => void }) {
+export function SceneContainer({setEffectNames}: { setEffectNames: (effects: string[]) => void }) {
   // leva controls for scene background color
   const {color, position, rotation, scale} = useControls("Background", {
     color: "#d4d4d4",
@@ -36,24 +37,23 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
 
 
   const managerRef = useRef<EffekseerManager>(null);
-  console.log(managerRef);
-
 
   const blockRef = useRef<EffectPlayer>(null!);
   // @ts-ignore
   window.blockRef = blockRef;
 
-  const laserRef = useRef<EffectPlayer>(null!);
+  const blockRef2 = useRef<EffectPlayer>(null!);
   // @ts-ignore
-  window.laserRef = laserRef;
+  window.blockRef2 = blockRef2;
+
+  const laserRef = useRef<EffectPlayer>(null!);
 
   return (
     <Effekseer ref={managerRef}>
       <color attach="background" args={[color]}/>
 
       <>
-        <mesh position={[0, 0, -1]} scale={[1, 1, 1]}
-              castShadow={true} receiveShadow={true}
+        <mesh castShadow={true} receiveShadow={true}
               onClick={() => laserRef.current?.play()}>
           <sphereGeometry/>
           <meshStandardMaterial color="orange"/>
@@ -61,8 +61,7 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
           <Suspense fallback={null}>
             <Effect ref={laserRef}
                     name={"Laser01"}
-                    src={laserUrl}
-                    playOnMount={true}
+                    src={ribbonSwordUrl}
                     debug={true}
                     dispose={null}
                     position={position}
@@ -73,12 +72,32 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
         </mesh>
 
 
-        <mesh position={[15, 1, 1]} scale={[0.1, 0.1, 0.1]} castShadow={true} receiveShadow={true}>
+        <mesh position={[5, 1, 0]} castShadow={true} receiveShadow={true}
+              onClick={() => blockRef.current?.play()}>
           <boxGeometry/>
           <meshStandardMaterial color="hotpink"/>
 
           <Suspense fallback={null}>
             <Effect ref={blockRef}
+                    name={"block"}
+                    src={blockUrl}
+                    playOnMount={true}
+                    debug
+                    position={position}
+                    rotation={rotation}
+                    scale={scale}
+            />
+          </Suspense>
+        </mesh>
+
+
+        <mesh position={[-5, 1, 0]} castShadow={true} receiveShadow={true}
+              onClick={() => blockRef2.current?.play()}>
+          <boxGeometry/>
+          <meshStandardMaterial color="hotpink"/>
+
+          <Suspense fallback={null}>
+            <Effect ref={blockRef2}
                     name={"block"}
                     src={blockUrl}
                     playOnMount={true}
@@ -96,6 +115,24 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
       <OrbitControls/>
       <SceneLights/>
       <PostProcessing/>
+
+
+      <TestComponent setEffectNames={setEffectNames}/>
+
     </Effekseer>
   )
+}
+
+
+function TestComponent({setEffectNames}: { setEffectNames: (effects: string[]) => void }) {
+  const {effekseerEffects} = useContext(EffekseerReactContext);
+
+  useEffect(() => {
+    console.log("effects updated");
+    console.log(effekseerEffects);
+
+    setEffectNames(Object.keys(effekseerEffects));
+  }, [effekseerEffects]);
+
+  return null;
 }

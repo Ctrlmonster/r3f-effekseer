@@ -12,14 +12,10 @@ export const effekseerManager = new EffekseerManager();
 window.simulation = effekseerManager;
 
 export const EffekseerReactContext = createContext<{
-  effekseerContext: EffekseerContext | null,
   effekseerEffects: Record<string, EffekseerEffect>
-  effectNames: string[],
   manager: EffekseerManager
 }>({
-  effekseerContext: null,
   effekseerEffects: {},
-  effectNames: [],
   manager: effekseerManager
 })
 

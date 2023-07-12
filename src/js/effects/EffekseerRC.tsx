@@ -5,13 +5,10 @@ import {EffekseerManager} from "./EffekseerManager";
 import {EffekseerContextProvider, effekseerManager} from "./EffectContext";
 
 
-
-
 // TODO: needs to be able to accept new camera, scene, clock, etc.
+
 export const Effekseer = forwardRef(({children}: { children: ReactNode }, ref: ForwardedRef<EffekseerManager>) => {
-  const [effectNames, setEffectNames] = useState<string[]>([]);
   const [effects, setEffects] = useState<Record<string, EffekseerEffect>>({});
-  const [context, setContext] = useState<EffekseerContext | null>(null);
 
   const state = useThree(({gl, scene, camera, clock}) => ({gl, scene, camera, clock}));
 
@@ -20,11 +17,7 @@ export const Effekseer = forwardRef(({children}: { children: ReactNode }, ref: F
   useLayoutEffect(() => {
     // init the simulation - this is how you get access
     // to scene, camera, renderer etc. from your imperative code.
-    effekseerManager.init(state.gl, state.scene, state.camera, state.clock, (effects, context) => {
-      setEffectNames(Object.keys(effects));
-      setEffects(effects);
-      setContext(context);
-    });
+    effekseerManager.init(state.gl, state.scene, state.camera, state.clock, setEffects);
     return () => {
       effekseerManager.destroy();
     }
@@ -40,9 +33,7 @@ export const Effekseer = forwardRef(({children}: { children: ReactNode }, ref: F
 
   return (
     <EffekseerContextProvider value={{
-      effekseerContext: context,
       effekseerEffects: effects,
-      effectNames: effectNames,
       manager: effekseerManager
     }}>
       {children}
