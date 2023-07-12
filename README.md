@@ -9,31 +9,36 @@ npm start
 Effects are currently available in the global `simulation.effects` object
 (available in the console). You can execute effects like this:
 ```js
-// call from global manager
-simulation.playEffect("Laser01");
 
-// create ref to <Effect> and use that imperatively 
-const laserRef = useRef<EffectPlayer>(null);
+// create ref to mixer which offers imperative api for spawning new effects
+const effectsMixer = useRef<EffectsMixer>(null);
+effectsMixer.current.playEffect("Laser01");
 
-// this will also play automatically on mount because of 'playOnMount' prop
+// create ref to persistent <Effect>  
+const effectRef = useRef<EffectPlayer>(null);
+
 return (
-  <mesh position={[0, 0, -1]} onClick={() => laserRef.current?.play()}>
+  <Effekseer ref={effectsMixer}>
+    {/*Trigger Effect when clicking on Mesh */}
+    <mesh onClick={() => effectRef.current?.play()}>
       <sphereGeometry/>
       <meshStandardMaterial color="orange"/>
-    
+
+      {/*Effect's Transforms are relative to parent Mesh*/}
       <Suspense fallback={null}>
-        <Effect ref={laserRef}
+        <Effect ref={effectRef}
                 name={"Laser01"}
                 src={laserUrl}
-                playOnMount
-                debug
                 dispose={null}
                 position={[0, 1, 0]}
                 rotation={rotation}
                 scale={scale}
+                playOnMount // play effect on mount
+                debug
         />
       </Suspense>
     </mesh>
+  </Effekseer>
 )
 ```
 
