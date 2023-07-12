@@ -9,13 +9,15 @@ npm start
 Effects are currently available in the global `simulation.effects` object
 (available in the console). You can execute effects like this:
 ```js
+// call from global manager
 simulation.playEffect("Laser01");
 
-// or do this 
-const laserRef = useRef<EffectPlayer>(null!);
+// create ref to <Effect> and use that imperatively 
+const laserRef = useRef<EffectPlayer>(null);
 
+// this will also play automatically on mount because of 'playOnMount' prop
 return (
-  <mesh position={[0, 0, -1]} scale={[0.5, 0.5, 0.5]} castShadow={true} receiveShadow={true}>
+  <mesh position={[0, 0, -1]} onClick={() => {laserRef.current?.play()}}>
       <sphereGeometry/>
       <meshStandardMaterial color="orange"/>
     
@@ -23,8 +25,8 @@ return (
         <Effect ref={laserRef}
                 name={"Laser01"}
                 src={laserUrl}
-                playOnMount={true}
-                debug={true}
+                playOnMount
+                debug
                 dispose={null}
                 position={[0, 1, 0]}
                 rotation={rotation}

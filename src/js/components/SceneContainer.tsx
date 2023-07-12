@@ -38,6 +38,11 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
   const managerRef = useRef<EffekseerManager>(null);
   console.log(managerRef);
 
+
+  const blockRef = useRef<EffectPlayer>(null!);
+  // @ts-ignore
+  window.blockRef = blockRef;
+
   const laserRef = useRef<EffectPlayer>(null!);
   // @ts-ignore
   window.laserRef = laserRef;
@@ -47,7 +52,7 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
       <color attach="background" args={[color]}/>
 
       <>
-        <mesh position={[0, 0, -1]} scale={[0.5, 0.5, 0.5]} castShadow={true} receiveShadow={true}>
+        <mesh position={[0, 0, -1]} scale={[1, 1, 1]} castShadow={true} receiveShadow={true}>
           <sphereGeometry/>
           <meshStandardMaterial color="orange"/>
 
@@ -58,9 +63,9 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
                     playOnMount={true}
                     debug={true}
                     dispose={null}
-                    position={[0, 1, 0]}
+                    position={position}
                     rotation={rotation}
-                    scale={scale}
+                    scale={[0.5, 0.5, 0.5]}
             />
           </Suspense>
         </mesh>
@@ -71,11 +76,12 @@ export function SceneContainer({setEffects}: { setEffects: (effects: string[]) =
           <meshStandardMaterial color="hotpink"/>
 
           <Suspense fallback={null}>
-            <Effect name={"block"}
+            <Effect ref={blockRef}
+                    name={"block"}
                     src={blockUrl}
                     playOnMount={true}
                     debug
-                    position={[0, 1, 0]}
+                    position={position}
                     rotation={rotation}
                     scale={scale}
             />

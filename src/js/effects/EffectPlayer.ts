@@ -12,6 +12,9 @@ export type EffectPlayerSetting = "paused"
 export class EffectPlayer {
   static #idCounter = 0;
   id = EffectPlayer.#idCounter++;
+  localPosition = [0, 0, 0];
+  localRotation = [0, 0, 0];
+  localScale = [1, 1, 1];
 
   latestHandle: EffekseerHandle | null = null;
   activeSettings = new Map<EffectPlayerSetting, { args: any, setter: (...args: any[]) => void }>();
@@ -20,11 +23,13 @@ export class EffectPlayer {
   }
 
   play() {
-    this.latestHandle = this.manager.playEffect(this.name);
-    // whenever we play the effect and get a new handle, we re-run all the setters
-    // that the user specified, on the new handle
-    for (const {args, setter} of this.activeSettings.values()) {
-      setter(...args);
+    if (this.manager) {
+      this.latestHandle = this.manager.playEffect(this.name);
+      // whenever we play the effect and get a new handle, we re-run all the setters
+      // that the user specified, on the new handle
+      for (const {args, setter} of this.activeSettings.values()) {
+        setter(...args);
+      }
     }
   }
 
@@ -37,6 +42,9 @@ export class EffectPlayer {
   }
 
   // --- setters for specific settings ---
+
+  // TODO: optimize away these temporary arrays for functions that are to be called
+  //  every frame (i.e. transforms)
 
   setPosition(x: number, y: number, z: number) {
     this.#setSetting("position", [x, y, z], () => this.latestHandle?.setLocation(x, y, z));
