@@ -1,6 +1,6 @@
 import {useContext} from "react";
 import {effekseerManager, EffekseerReactContext} from "../effects/EffectContext";
-import {EffectPlayer} from "../effects/EffectPlayer";
+import {EffectInstance} from "../effects/EffectInstance";
 
 
 export function EffectButtons({effectNames}: { effectNames: string[] }) {
@@ -10,14 +10,14 @@ export function EffectButtons({effectNames}: { effectNames: string[] }) {
   return (
     <div className="absolute bottom-0 left-0">
       {effectNames.map((name, i) =>
-        <EffectButton effectPlayer={new EffectPlayer(name, effekseerManager.effects[name], effekseerManager)} key={i}/>
+        <EffectButton effectPlayer={new EffectInstance(name, effekseerManager.effects[name], effekseerManager)} key={i}/>
       )}
     </div>
   )
 }
 
 
-export function EffectButton({effectPlayer}: { effectPlayer: EffectPlayer }) {
+export function EffectButton({effectPlayer}: { effectPlayer: EffectInstance }) {
   return (
     <button className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full m-2"
             onClick={() => {

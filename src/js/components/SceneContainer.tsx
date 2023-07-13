@@ -7,7 +7,7 @@ import {Effect} from "../effects/Effect";
 import React, {Suspense, useContext, useEffect, useRef} from "react";
 import {EffekseerManager} from "../effects/EffekseerManager";
 import {Effekseer} from "../effects/EffekseerRC";
-import {EffectPlayer} from "../effects/EffectPlayer";
+import {EffectInstance} from "../effects/EffectInstance";
 import {EffekseerReactContext} from "../effects/EffectContext";
 
 import blockUrl from "../../../Resources/block.efk?url";
@@ -38,30 +38,55 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
 
   const managerRef = useRef<EffekseerManager>(null);
 
-  const blockRef = useRef<EffectPlayer>(null!);
+  const blockRef = useRef<EffectInstance>(null!);
   // @ts-ignore
   window.blockRef = blockRef;
 
-  const blockRef2 = useRef<EffectPlayer>(null!);
+  const laserRef = useRef<EffectInstance>(null!);
   // @ts-ignore
-  window.blockRef2 = blockRef2;
+  window.laserRef = laserRef;
 
-  const laserRef = useRef<EffectPlayer>(null!);
+  const laser2Ref = useRef<EffectInstance>(null!);
+  // @ts-ignore
+  window.laser2Ref = laser2Ref;
+
 
   return (
     <Effekseer ref={managerRef}>
       <color attach="background" args={[color]}/>
 
       <>
-        <mesh castShadow={true} receiveShadow={true}
-              onClick={() => laserRef.current?.play()}>
+        <mesh
+          position={[0, 0, -9]}
+          castShadow={true} receiveShadow={true}
+          onClick={() => laser2Ref.current?.play()}>
           <sphereGeometry/>
           <meshStandardMaterial color="orange"/>
 
           <Suspense fallback={null}>
+            <Effect ref={laser2Ref}
+                    name={"Laser02"}
+                    src={laser2Url}
+                    debug={true}
+                    dispose={null}
+                    position={position}
+                    rotation={rotation}
+                    scale={[0.5, 0.5, 0.5]}
+            />
+          </Suspense>
+        </mesh>
+
+        <mesh
+          position={[0, 0, -12]}
+          castShadow={true} receiveShadow={true}
+          onClick={() => laserRef.current?.play()}>
+          <sphereGeometry/>
+          <meshStandardMaterial color="hotpink"/>
+
+          <Suspense fallback={null}>
             <Effect ref={laserRef}
                     name={"Laser01"}
-                    src={ribbonSwordUrl}
+                    src={laser1Url}
                     debug={true}
                     dispose={null}
                     position={position}
@@ -72,10 +97,10 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
         </mesh>
 
 
-        <mesh position={[5, 1, 0]} castShadow={true} receiveShadow={true}
+        <mesh position={[5, 1, 0]} scale={[10, 10, 10]} castShadow={true} receiveShadow={true}
               onClick={() => blockRef.current?.play()}>
           <boxGeometry/>
-          <meshStandardMaterial color="hotpink"/>
+          <meshStandardMaterial color="gray"/>
 
           <Suspense fallback={null}>
             <Effect ref={blockRef}
@@ -85,26 +110,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
                     debug
                     position={position}
                     rotation={rotation}
-                    scale={scale}
-            />
-          </Suspense>
-        </mesh>
-
-
-        <mesh position={[-5, 1, 0]} castShadow={true} receiveShadow={true}
-              onClick={() => blockRef2.current?.play()}>
-          <boxGeometry/>
-          <meshStandardMaterial color="hotpink"/>
-
-          <Suspense fallback={null}>
-            <Effect ref={blockRef2}
-                    name={"block"}
-                    src={blockUrl}
-                    playOnMount={true}
-                    debug
-                    position={position}
-                    rotation={rotation}
-                    scale={scale}
+                    scale={[1/10, 1/10, 1/10]}
             />
           </Suspense>
         </mesh>
@@ -115,7 +121,6 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
       <OrbitControls/>
       <SceneLights/>
       <PostProcessing/>
-
 
       <TestComponent setEffectNames={setEffectNames}/>
 

@@ -8,14 +8,15 @@ npm start
 ```
 Effects are currently available in the global `simulation.effects` object
 (available in the console). You can execute effects like this:
+
 ```js
 
 // create ref to mixer which offers imperative api for spawning new effects
-const effectsMixer = useRef<EffectsMixer>(null);
+const effectsMixer = useRef < EffectsMixer > (null);
 effectsMixer.current.playEffect("Laser01");
 
 // create ref to persistent <Effect>  
-const effectRef = useRef<EffectPlayer>(null);
+const effectRef = useRef < EffectInstance > (null);
 
 return (
   <Effekseer ref={effectsMixer}>
