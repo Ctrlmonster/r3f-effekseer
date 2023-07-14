@@ -7,12 +7,12 @@ export type EffectInstanceSetting = "paused"
   | "rotation"
   | "scale"
   | "speed"
-  | "seed"
-  | "shown"
+  | "randomSeed"
+  | "visible"
   | "matrix"
   | "dynamicInput"
   | "targetPosition"
-  | "allColor"
+  | "color"
 
 
 export class EffectInstance {
@@ -299,21 +299,21 @@ export class EffectInstance {
 
   /**
    * Set the random seed of this effect.
-   * @param {number} seed random seed
+   * @param {number} randomSeed random seed
    */
-  setRandomSeed(seed: number) {
-    this._prepareSetting("seed", () => this._latestHandle!.setRandomSeed(seed));
-    this._latestHandle?.setRandomSeed(seed);
+  setRandomSeed(randomSeed: number) {
+    this._prepareSetting("randomSeed", () => this._latestHandle!.setRandomSeed(randomSeed));
+    this._latestHandle?.setRandomSeed(randomSeed);
   }
 
 
   /**
-   * Set the shown flag of this effect instance.
+   * Set the visible flag of this effect instance.
    * if specified false, this effect will be invisible.
    * @param {boolean} shown Shown flag
    */
-  setShown(shown: boolean) {
-    this._prepareSetting("shown", () => this._latestHandle!.setShown(shown));
+  setVisible(shown: boolean) {
+    this._prepareSetting("visible", () => this._latestHandle!.setShown(shown));
     this._latestHandle?.setShown(shown);
   }
 
@@ -332,8 +332,8 @@ export class EffectInstance {
    * @param {number} b B channel value of color
    * @param {number} a A channel value of color
    */
-  setAllColor(r: number, g: number, b: number, a: number) {
-    this._prepareSetting("allColor", () => this._latestHandle!.setAllColor(r, g, b, a));
+  setColor(r: number, g: number, b: number, a: number) {
+    this._prepareSetting("color", () => this._latestHandle!.setAllColor(r, g, b, a));
     this._latestHandle?.setAllColor(r, g, b, a);
   }
 
@@ -354,7 +354,7 @@ export class EffectInstance {
    * @param {number} index slot index
    * @param {number} value value
    */
-  setDynamicInput(index: number, value: number) {
+  setDynamicInput(index: number, value: number | undefined) {
     this._dynamicInputs[index] = value;
     this._prepareSetting("dynamicInput", () => {
       for (let i = 0; i < this._dynamicInputs.length; i++) {
@@ -364,14 +364,14 @@ export class EffectInstance {
         }
       }
     });
-    this._latestHandle?.setDynamicInput(index, value);
+    if (value != undefined) this._latestHandle?.setDynamicInput(index, value);
   }
 
   /**
    * get a dynamic parameter, which changes effect parameters dynamically while playing
    * @param {number} index slot index
    */
-  getDynamicInput(index: number) : number | undefined {
+  getDynamicInput(index: number): number | undefined {
     return this._dynamicInputs[index];
   }
 

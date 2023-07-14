@@ -7,14 +7,34 @@ import {EffectInstance} from "./EffectInstance";
 
 
 export type EffectProps = {
+  // initialization / loading
+
   name: string,
   src: string,
-  position?: [number, number, number],
-  rotation?: [number, number, number],
-  scale?: [number, number, number],
+  // -----------------------------------------
+  // effect settings
+
+  position?: [x: number, y: number, z: number],
+  rotation?: [x: number, y: number, z: number],
+  scale?: [x: number, y: number, z: number],
+
+  speed?: number,
+  randomSeed?: number,
+  visible?: boolean,
+  dynamicInput?: (number | undefined)[],
+  targetPosition?: [x: number, y: number, z: number],
+  color?: [r: number, g: number, b: number, alpha: number],
+  paused?: boolean,
+
+  // -----------------------------------------
+  // r3f specifics
+
   playOnMount?: boolean,
   dispose?: null,
   debug?: boolean,
+  // -----------------------------------------
+  // loading callbacks
+
   onload?: (() => void) | undefined,
   onerror?: ((reason: string, path: string) => void) | undefined,
   redirect?: ((path: string) => string) | undefined,
@@ -24,8 +44,10 @@ export type EffectProps = {
 export const Effect = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
+                                    speed, visible, randomSeed, targetPosition,
+                                    dynamicInput, color, paused,
+                                    playOnMount, dispose, debug,
                                     onerror, onload, redirect,
-                                    playOnMount, dispose, debug
                                   }: EffectProps, ref: ForwardedRef<EffectInstance>) => {
 
   const group = useRef<Group>(null!);
@@ -76,6 +98,59 @@ export const Effect = forwardRef(({
       effectPlayer.setScale(1, 1, 1);
     }
   }, [scale]);
+
+  useEffect(() => {
+    if (speed != undefined) {
+      effectPlayer.setSpeed(speed);
+    } else {
+      effectPlayer.dropSetting("speed");
+    }
+  }, [speed]);
+
+  useEffect(() => {
+    if (visible != undefined) {
+      effectPlayer.setVisible(visible);
+    } else {
+      effectPlayer.dropSetting("visible");
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    if (randomSeed != undefined) {
+      effectPlayer.setRandomSeed(randomSeed);
+    } else {
+      effectPlayer.dropSetting("randomSeed");
+    }
+  }, [randomSeed]);
+
+  useEffect(() => {
+    if (targetPosition != undefined) {
+      effectPlayer.setTargetPosition(targetPosition[0], targetPosition[1], targetPosition[2]);
+    } else {
+      effectPlayer.dropSetting("targetPosition");
+    }
+  }, [targetPosition]);
+
+  useEffect(() => {
+    if (dynamicInput != undefined) {
+      for (let i = 0; i < dynamicInput.length; i++)
+        effectPlayer.setDynamicInput(i, dynamicInput[i]);
+    } else {
+      effectPlayer.dropSetting("dynamicInput");
+    }
+  }, [dynamicInput]);
+
+  useEffect(() => {
+    if (color != undefined) {
+      effectPlayer.setColor(color[0], color[1], color[2], color[3]);
+    } else {
+      effectPlayer.dropSetting("color");
+    }
+  }, [color]);
+
+  useEffect(() => {
+    effectPlayer.setPaused(!!paused);
+  }, [paused]);
 
 
   useFrame(() => {
