@@ -12,14 +12,14 @@ Effects are currently available in the global `simulation.effects` object
 ```js
 
 // create ref to mixer which offers imperative api for spawning new effects
-const effectsMixer = useRef < EffectsMixer > (null);
-effectsMixer.current.playEffect("Laser01");
+const effectsManager = useRef<EffekseerManager>(null);
+effectsManager.current.playEffect("Laser01");
 
 // create ref to persistent <Effect>  
-const effectRef = useRef < EffectInstance > (null);
+const effectRef = useRef<EffectInstance>(null);
 
 return (
-  <Effekseer ref={effectsMixer}>
+  <Effekseer ref={effectsManager}>
     {/*Trigger Effect when clicking on Mesh */}
     <mesh onClick={() => effectRef.current?.play()}>
       <sphereGeometry/>
@@ -51,6 +51,8 @@ black color in the particle images are not rendered transparently.
 * The Effekseer render pass needs to be adapted to be compatible
 with the pmndrs PostProcessing lib (see Resources below)
 * Figure out how this could be packaged into a library
+* Make effectInstance.play() return a promise for the end of the effect
+* Check what kind of methods to add to the Manager
 
 ### Reference
 I've included the Effekseer vanilla three demo for reference inside
