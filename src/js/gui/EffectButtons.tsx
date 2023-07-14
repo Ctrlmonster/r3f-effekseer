@@ -4,9 +4,6 @@ import {EffectInstance} from "../effects/EffectInstance";
 
 
 export function EffectButtons({effectNames}: { effectNames: string[] }) {
-
-  console.log(effectNames);
-
   return (
     <div className="absolute bottom-0 left-0">
       {effectNames.map((name, i) =>

@@ -23,6 +23,8 @@ export type EffectProps = {
   visible?: boolean,
   dynamicInput?: (number | undefined)[],
   targetPosition?: [x: number, y: number, z: number],
+
+  // colors values between 0 and 255
   color?: [r: number, g: number, b: number, alpha: number],
   paused?: boolean,
 
@@ -41,7 +43,7 @@ export type EffectProps = {
 }
 
 
-export const Effect = forwardRef(({
+export const Effekt = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
                                     speed, visible, randomSeed, targetPosition,
@@ -49,6 +51,7 @@ export const Effect = forwardRef(({
                                     playOnMount, dispose, debug,
                                     onerror, onload, redirect,
                                   }: EffectProps, ref: ForwardedRef<EffectInstance>) => {
+
 
   const group = useRef<Group>(null!);
   const worldPos = useRef(new Vector3());
@@ -60,13 +63,13 @@ export const Effect = forwardRef(({
     return await manager.loadEffect(name, src, 1, onload, onerror, redirect);
   }, [src, name]);
 
-  const [effectPlayer] = useState(new EffectInstance(name, effect, manager));
-  useImperativeHandle(ref, () => effectPlayer, []);
+  const [effectInstance] = useState(new EffectInstance(name, effect, manager));
+  useImperativeHandle(ref, () => effectInstance, []);
 
 
   useEffect(() => {
     if (playOnMount) {
-      effectPlayer?.play();
+      effectInstance?.play();
     }
     return () => {
       if (dispose != null) {
@@ -77,97 +80,96 @@ export const Effect = forwardRef(({
 
   useEffect(() => {
     if (position) {
-      effectPlayer.setPosition(position[0], position[1], position[2]);
+      effectInstance.setPosition(position[0], position[1], position[2]);
     } else {
-      effectPlayer.setPosition(0, 0, 0);
+      effectInstance.setPosition(0, 0, 0);
     }
   }, [position]);
 
   useEffect(() => {
     if (rotation) {
-      effectPlayer.setRotation(rotation[0], rotation[1], rotation[2]);
+      effectInstance.setRotation(rotation[0], rotation[1], rotation[2]);
     } else {
-      effectPlayer.setRotation(0, 0, 0);
+      effectInstance.setRotation(0, 0, 0);
     }
   }, [rotation]);
 
   useEffect(() => {
     if (scale) {
-      effectPlayer.setScale(scale[0], scale[1], scale[2]);
+      effectInstance.setScale(scale[0], scale[1], scale[2]);
     } else {
-      effectPlayer.setScale(1, 1, 1);
+      effectInstance.setScale(1, 1, 1);
     }
   }, [scale]);
 
   useEffect(() => {
     if (speed != undefined) {
-      effectPlayer.setSpeed(speed);
+      effectInstance.setSpeed(speed);
     } else {
-      effectPlayer.dropSetting("speed");
+      effectInstance.setSpeed(1);
     }
   }, [speed]);
 
   useEffect(() => {
     if (visible != undefined) {
-      effectPlayer.setVisible(visible);
+      effectInstance.setVisible(visible);
     } else {
-      effectPlayer.dropSetting("visible");
+      effectInstance.setVisible(true);
     }
   }, [visible]);
 
   useEffect(() => {
     if (randomSeed != undefined) {
-      effectPlayer.setRandomSeed(randomSeed);
+      effectInstance.setRandomSeed(randomSeed);
     } else {
-      effectPlayer.dropSetting("randomSeed");
+      effectInstance.dropSetting("randomSeed");
     }
   }, [randomSeed]);
 
   useEffect(() => {
     if (targetPosition != undefined) {
-      effectPlayer.setTargetPosition(targetPosition[0], targetPosition[1], targetPosition[2]);
+      effectInstance.setTargetPosition(targetPosition[0], targetPosition[1], targetPosition[2]);
     } else {
-      effectPlayer.dropSetting("targetPosition");
+      effectInstance.dropSetting("targetPosition");
     }
   }, [targetPosition]);
 
   useEffect(() => {
     if (dynamicInput != undefined) {
       for (let i = 0; i < dynamicInput.length; i++)
-        effectPlayer.setDynamicInput(i, dynamicInput[i]);
+        effectInstance.setDynamicInput(i, dynamicInput[i]);
     } else {
-      effectPlayer.dropSetting("dynamicInput");
+      effectInstance.dropSetting("dynamicInput");
     }
   }, [dynamicInput]);
 
   useEffect(() => {
     if (color != undefined) {
-      effectPlayer.setColor(color[0], color[1], color[2], color[3]);
+      effectInstance.setColor(color[0], color[1], color[2], color[3]);
     } else {
-      effectPlayer.dropSetting("color");
+      effectInstance.dropSetting("color");
     }
   }, [color]);
 
   useEffect(() => {
-    effectPlayer.setPaused(!!paused);
+    effectInstance.setPaused(!!paused);
   }, [paused]);
 
 
   useFrame(() => {
-    // we update only the parent transforms here
-
-    if (effectPlayer) {
+    // we sync the parent transforms every frame here (effect Instance makes dirty checks internally)
+    if (effectInstance) {
       const pos = group.current.getWorldPosition(worldPos.current);
-      effectPlayer._setParentPosition(pos.x, pos.y, pos.z);
-      effectPlayer.setPosition(effectPlayer._localPosition[0], effectPlayer._localPosition[1], effectPlayer._localPosition[2]);
+      effectInstance._setParentPosition(pos.x, pos.y, pos.z);
+      effectInstance.setPosition(effectInstance._localPosition[0], effectInstance._localPosition[1], effectInstance._localPosition[2]);
 
       const rot = group.current.rotation;
-      effectPlayer._setParentRotation(rot.x, rot.y, rot.z);
-      effectPlayer.setRotation(effectPlayer._localRotation[0], effectPlayer._localRotation[1], effectPlayer._localRotation[2]);
+      effectInstance._setParentRotation(rot.x, rot.y, rot.z);
+      effectInstance.setRotation(effectInstance._localRotation[0], effectInstance._localRotation[1], effectInstance._localRotation[2]);
 
       const scale = group.current.getWorldScale(worldScale.current);
-      effectPlayer._setParentScale(scale.x, scale.y, scale.z);
-      effectPlayer.setScale(effectPlayer._localScale[0], effectPlayer._localScale[1], effectPlayer._localScale[2]);
+      effectInstance._setParentScale(scale.x, scale.y, scale.z);
+      effectInstance.setScale(effectInstance._localScale[0], effectInstance._localScale[1], effectInstance._localScale[2]);
     }
   });
 

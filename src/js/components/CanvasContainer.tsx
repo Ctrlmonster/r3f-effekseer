@@ -20,6 +20,7 @@ const updateDpr = (factor: number) => {
 // ------------------------------------------------------------------
 
 
+
 export function CanvasContainer() {
   const renderOnDemand = useRenderOnDemand(false);
   // ------------------------------------------------------------------

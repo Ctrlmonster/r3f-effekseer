@@ -3,18 +3,21 @@ import {OrbitControls} from "@react-three/drei";
 import {SceneLights} from "./SceneLights";
 import {ViewportHelper} from "../helper/ViewportHelper";
 import {useControls} from "leva";
-import {Effect} from "../effects/Effect";
+import {Effekt} from "../effects/Effekt";
 import React, {Suspense, useContext, useEffect, useRef} from "react";
 import {EffekseerManager} from "../effects/EffekseerManager";
 import {Effekseer} from "../effects/EffekseerRC";
 import {EffectInstance} from "../effects/EffectInstance";
-import {EffekseerReactContext} from "../effects/EffectContext";
+import {effekseerManager, EffekseerReactContext} from "../effects/EffectContext";
 
 import blockUrl from "../../../Resources/block.efk?url";
 import laser1Url from "../../../Resources/Laser01.efk?url";
 import laser2Url from "../../../Resources/Laser02.efk?url";
 import ribbonParentUrl from "../../../Resources/Simple_Ribbon_Parent.efk?url";
 import ribbonSwordUrl from "../../../Resources/Simple_Ribbon_Sword.efk?url";
+
+
+effekseerManager.preloadEffect("Laser01", laser1Url);
 
 
 export function SceneContainer({setEffectNames}: { setEffectNames: (effects: string[]) => void }) {
@@ -64,7 +67,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="orange"/>
 
           <Suspense fallback={null}>
-            <Effect ref={laser2Ref}
+            <Effekt ref={laser2Ref}
                     name={"Laser02"}
                     src={laser2Url}
                     debug={true}
@@ -72,6 +75,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
                     position={position}
                     rotation={rotation}
                     scale={[0.5, 0.5, 0.5]}
+                    speed={0.1}
             />
           </Suspense>
         </mesh>
@@ -84,7 +88,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="hotpink"/>
 
           <Suspense fallback={null}>
-            <Effect ref={laserRef}
+            <Effekt ref={laserRef}
                     name={"Laser01"}
                     src={laser1Url}
                     debug={true}
@@ -103,14 +107,15 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="gray"/>
 
           <Suspense fallback={null}>
-            <Effect ref={blockRef}
+            <Effekt ref={blockRef}
                     name={"block"}
                     src={blockUrl}
                     playOnMount={true}
                     debug
                     position={position}
                     rotation={rotation}
-                    scale={[1/10, 1/10, 1/10]}
+                    scale={[.1, .1, .1]}
+                    color={[255, 0, 0, 255]}
             />
           </Suspense>
         </mesh>
@@ -133,9 +138,6 @@ function TestComponent({setEffectNames}: { setEffectNames: (effects: string[]) =
   const {effekseerEffects} = useContext(EffekseerReactContext);
 
   useEffect(() => {
-    console.log("effects updated");
-    console.log(effekseerEffects);
-
     setEffectNames(Object.keys(effekseerEffects));
   }, [effekseerEffects]);
 

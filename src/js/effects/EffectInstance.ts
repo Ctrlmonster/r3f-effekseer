@@ -15,6 +15,8 @@ export type EffectInstanceSetting = "paused"
   | "color"
 
 
+// TODO: figure out a way to return a promise for .play()
+
 export class EffectInstance {
   static #idCounter = 0;
   id = EffectInstance.#idCounter++;

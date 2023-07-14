@@ -2,12 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/App';
 import '../scss/main.scss';
+import {effekseerManager} from "./effects/EffectContext";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App/>
-  </React.StrictMode>,
-)
+effekseerManager.preloadRuntime();
+
+
+setTimeout(() => {
+  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+      <App/>
+    </React.StrictMode>,
+  )
+}, 1000);
+
+
 
 
 /*
