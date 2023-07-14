@@ -2,9 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/App';
 import '../scss/main.scss';
-import {effekseerManager} from "./effects/EffectContext";
-
-effekseerManager.preloadRuntime();
 
 
 setTimeout(() => {
