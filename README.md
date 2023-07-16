@@ -2,8 +2,8 @@
 ## Effekseer for React-Three-Fiber
 
 ### ⚠️ ONLY NEEDS TO BE PROPERLY PACKAGED INTO A LIB⚠️
-**WE ONLY NEED TO FIGURE OUT HOW TO IMPORT `effekseer.js` FROM JS OR FIX THE 
-RECURSION ERROR IN THE `effekseer.src.js` FILE - ANY HELP APPRECIATED**
+**We only need to figure how to import `effekseer.js` from js or fix 
+the recursion error when importing in the `effekseer.src.js` file - any help appreciated**
 ![Screenshot of Error](effek_err.png)
 ------------------
 
