@@ -4,7 +4,7 @@
 ### ⚠️ ONLY NEEDS TO BE PROPERLY PACKAGED INTO A LIB⚠️
 **WE ONLY NEED TO FIGURE OUT HOW TO IMPORT `effekseer.js` FROM JS OR FIX THE 
 RECURSION ERROR IN THE `effekseer.src.js` FILE - ANY HELP APPRECIATED**
-![Screenshot of Scene](effek_err.png)
+![Screenshot of Error](effek_err.png)
 ------------------
 
 
