@@ -53,6 +53,7 @@ by Effekseer, as well as control playback of the effect.
 
 Some examples methods:
 ```js
+const effect = new EffectInstance(name, path); // or get via <Effect> ref
 effect.play(); // start a new run of this effect  
 effect.setPaused(true); // pause / unpause this effect
 effect.stop(); // stop the effect from running
@@ -121,9 +122,7 @@ type EffectProps = {
 
 ## The Parent Class: `<Effekseer>` & EffekseerManager
 
-The `<Effekseer>` parent component provides its children with the React context
-
-
+The `<Effekseer>` parent component provides its children with the React context to spawn effects.
 It also forwards a ref to the `EffekseerManager` **singleton**.
 This class handles the initialization of the **wasm runtime** and is there
 to **load/unload effects**. It als offers a **limited imperative API** to play
