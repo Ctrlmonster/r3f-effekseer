@@ -1,42 +1,34 @@
 import React, {ForwardedRef, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {Group, Vector3} from "three";
-import {EffekseerReactContext} from "./EffectContext";
+import {EffekseerReactContext} from "../EffekseerReactContext";
 import {useFrame} from "@react-three/fiber";
 import {suspend} from "suspend-react";
-import {EffectInstance} from "./EffectInstance";
+import {EffectInstance} from "../EffectInstance";
 
 
 export type EffectProps = {
-  // initialization / loading
-
+  // required props for initialization / loading
   name: string,
   src: string,
   // -----------------------------------------
   // effect settings
-
   position?: [x: number, y: number, z: number],
   rotation?: [x: number, y: number, z: number],
   scale?: [x: number, y: number, z: number],
-
   speed?: number,
   randomSeed?: number,
   visible?: boolean,
   dynamicInput?: (number | undefined)[],
   targetPosition?: [x: number, y: number, z: number],
-
-  // colors values between 0 and 255
   color?: [r: number, g: number, b: number, alpha: number],
   paused?: boolean,
-
   // -----------------------------------------
   // r3f specifics
-
   playOnMount?: boolean,
   dispose?: null,
   debug?: boolean,
   // -----------------------------------------
   // loading callbacks
-
   onload?: (() => void) | undefined,
   onerror?: ((reason: string, path: string) => void) | undefined,
   redirect?: ((path: string) => string) | undefined,

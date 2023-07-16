@@ -3,18 +3,19 @@ import {OrbitControls} from "@react-three/drei";
 import {SceneLights} from "./SceneLights";
 import {ViewportHelper} from "../helper/ViewportHelper";
 import {useControls} from "leva";
-import {Effekt} from "../effects/Effekt";
 import React, {Suspense, useContext, useEffect, useRef} from "react";
-import {EffekseerManager} from "../effects/EffekseerManager";
-import {Effekseer} from "../effects/EffekseerRC";
-import {EffectInstance} from "../effects/EffectInstance";
-import {effekseerManager, EffekseerReactContext} from "../effects/EffectContext";
+import {
+  EffectInstance,
+  Effekseer,
+  effekseerManager,
+  EffekseerManager,
+  EffekseerReactContext,
+  Effekt
+} from "../../lib";
 
 import blockUrl from "../../../Resources/block.efk?url";
 import laser1Url from "../../../Resources/Laser01.efk?url";
 import laser2Url from "../../../Resources/Laser02.efk?url";
-import ribbonParentUrl from "../../../Resources/Simple_Ribbon_Parent.efk?url";
-import ribbonSwordUrl from "../../../Resources/Simple_Ribbon_Sword.efk?url";
 
 
 effekseerManager.preloadEffect("Laser01", laser1Url);
@@ -135,11 +136,11 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
 
 
 function TestComponent({setEffectNames}: { setEffectNames: (effects: string[]) => void }) {
-  const {effekseerEffects} = useContext(EffekseerReactContext);
+  const {effects} = useContext(EffekseerReactContext);
 
   useEffect(() => {
-    setEffectNames(Object.keys(effekseerEffects));
-  }, [effekseerEffects]);
+    setEffectNames(Object.keys(effects));
+  }, [effects]);
 
   return null;
 }

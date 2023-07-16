@@ -459,6 +459,6 @@ declare namespace effekseer {
     }
 }
 
-declare module "src/js/effects/effekseer/effekseer" {
+declare module "effekseer-native" {
     export = effekseer;
 }

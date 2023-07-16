@@ -23,7 +23,7 @@
   },
   "include": [
     "src",
-    "src/js/effects/effekseer"
+    "src/lib/effects/effekseer"
   ],
   "references": [
     {

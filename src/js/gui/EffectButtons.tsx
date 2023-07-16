@@ -1,13 +1,11 @@
-import {useContext} from "react";
-import {effekseerManager, EffekseerReactContext} from "../effects/EffectContext";
-import {EffectInstance} from "../effects/EffectInstance";
-
+import {EffectInstance, effekseerManager} from "../../lib";
 
 export function EffectButtons({effectNames}: { effectNames: string[] }) {
   return (
     <div className="absolute bottom-0 left-0">
       {effectNames.map((name, i) =>
-        <EffectButton effectPlayer={new EffectInstance(name, effekseerManager.effects[name], effekseerManager)} key={i}/>
+        <EffectButton effectPlayer={new EffectInstance(name, effekseerManager.effects[name], effekseerManager)}
+                      key={i}/>
       )}
     </div>
   )

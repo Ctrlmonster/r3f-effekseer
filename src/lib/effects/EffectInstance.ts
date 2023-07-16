@@ -1,4 +1,4 @@
-import {EffekseerEffect, EffekseerHandle} from "src/js/effects/effekseer/effekseer";
+import {EffekseerHandle, EffekseerEffect} from "..";
 import {EffekseerManager} from "./EffekseerManager";
 
 
@@ -72,7 +72,7 @@ export class EffectInstance {
     if (this.manager) {
       this.#paused = false;
       !continuePrevious && this._latestHandle?.stop();
-      this._latestHandle = this.manager.playEffect(this.name);
+      this._latestHandle = this.manager.playEffect(this.name) || null;
       // whenever we play the effect and get a new handle, we re-run all the setters
       // that the user specified, on the new handle
       for (const activateSetting of this.#activateSettingByName.values()) {

@@ -1,7 +1,6 @@
-import wasmPath from "../effects/effekseer/effekseer.wasm?url";
+import wasmPath from "./effekseer/effekseer.wasm?url";
 import {Camera, Clock, Scene, WebGLRenderer} from "three";
-import {EffekseerContext, EffekseerEffect} from "src/js/effects/effekseer/effekseer";
-
+import {EffekseerContext, EffekseerEffect} from "effekseer-native";
 
 export type EffectLoadingPackage = {
   name: string, path: string, scale: number,
@@ -182,6 +181,7 @@ export class EffekseerManager {
 
       console.log("Starting to preload wasm runtime now");
 
+      console.log(effekseer);
       effekseer.initRuntime(wasmPath, () => {
         this.#isPreloadingRuntime = false;
         console.log("PRELOAD COMPLETE");
@@ -299,6 +299,6 @@ export class EffekseerManager {
   playEffect(name: string) {
     return this.context?.play(this.effects[name], 0, 0, 0);
   }
-
 }
 
+export const effekseerManager = new EffekseerManager();

@@ -1,8 +1,12 @@
-import {EffekseerContext, EffekseerEffect} from "src/js/effects/effekseer/effekseer";
 import {ForwardedRef, forwardRef, ReactNode, useImperativeHandle, useLayoutEffect, useState} from "react";
 import {useFrame, useThree} from "@react-three/fiber";
-import {EffekseerManager, EffekseerSettings} from "./EffekseerManager";
-import {EffekseerContextProvider, effekseerManager} from "./EffectContext";
+import {
+  effekseerManager,
+  EffekseerReactContext,
+  EffekseerManager,
+  EffekseerSettings,
+  EffekseerEffect
+} from "../../index";
 
 
 // TODO: needs to be able to accept new camera, scene, clock, etc.
@@ -43,11 +47,11 @@ export const Effekseer = forwardRef(({children, settings, ejectRenderer}: {
 
 
   return (
-    <EffekseerContextProvider value={{
-      effekseerEffects: effects,
+    <EffekseerReactContext.Provider value={{
+      effects: effects,
       manager: effekseerManager
     }}>
       {children}
-    </EffekseerContextProvider>
+    </EffekseerReactContext.Provider>
   )
 });
