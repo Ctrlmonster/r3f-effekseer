@@ -6,7 +6,7 @@ import {
   effekseerManager,
   EffekseerReactContext,
   EffekseerSettings
-} from "../../index";
+} from "../index";
 import {Camera} from "three";
 
 

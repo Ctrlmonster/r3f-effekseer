@@ -2,6 +2,10 @@
 ## Effekseer for React-Three-Fiber
 
 ### ⚠️ ONLY NEEDS TO BE PROPERLY PACKAGED INTO A LIB⚠️
+**WE ONLY NEED TO FIGURE OUT HOW TO IMPORT `effekseer.js` FROM JS OR FIX THE 
+RECURSION ERROR IN THE `effekseer.src.js` FILE - ANY HELP APPRECIATED**
+![Screenshot of Scene](effek_err.png)
+------------------
 
 
 This library provides r3f bindings to the **WebGL+WASM** runtime
@@ -116,8 +120,7 @@ type EffectProps = {
   onload?: (() => void) | undefined,
   onerror?: ((reason: string, path: string) => void) | undefined,
   redirect?: ((path: string) => string) | undefined,
-} 
-
+}
 ```
 
 ## The Parent: `<Effekseer>` & EffekseerManager

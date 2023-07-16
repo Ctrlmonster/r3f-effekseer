@@ -11,7 +11,7 @@ import {
   EffekseerManager,
   EffekseerReactContext,
   Effect
-} from "../../lib";
+} from "../../r3f-effekseer";
 
 import blockUrl from "../../../Resources/block.efk?url";
 import laser1Url from "../../../Resources/Laser01.efk?url";

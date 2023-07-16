@@ -1,4 +1,4 @@
-import {EffectInstance, effekseerManager} from "../../lib";
+import {EffectInstance, effekseerManager} from "../../r3f-effekseer";
 
 export function EffectButtons({effectNames}: { effectNames: string[] }) {
   return (

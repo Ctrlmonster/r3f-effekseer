@@ -1,4 +1,4 @@
-import {EffekseerHandle, EffekseerEffect} from "..";
+import {EffekseerHandle, EffekseerEffect} from "./index";
 import {EffekseerManager} from "./EffekseerManager";
 
 

@@ -23,7 +23,7 @@
   },
   "include": [
     "src",
-    "src/lib/effects/effekseer"
+    "src/r3f-effekseer/effekseer"
   ],
   "references": [
     {
