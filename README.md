@@ -168,6 +168,7 @@ with the pmndrs PostProcessing lib (see Resources below)
 * Figure out how this could be packaged into a library
 * Make effectInstance.play() return a promise for the end of the effect
 * Check what kind of methods to add to the Manager
+* improve HMR experience
 
 ## References
 ### Vanilla Three.js Demo
