@@ -29,7 +29,7 @@ function MyScene() {
 
         {/*Suspense is required for async loading of effect*/}
         <Suspense> 
-          <Effekt ref={effectRef}
+          <Effect ref={effectRef}
                   name={"Laser1"}
                   src={"../assets/Laser1.efk"}
                   playOnMount // start playing as soon effect is ready

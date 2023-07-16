@@ -11,10 +11,10 @@ export type {EffekseerContext, EffekseerEffect, EffekseerHandle} from "effekseer
 
 // react components
 export {Effekseer} from "./effects/components/EffekseerParent";
-export {Effekt} from "./effects/components/Effekt";
+export {Effect} from "./effects/components/Effect";
 
 // types
-export type {EffectProps} from "./effects/components/Effekt";
+export type {EffectProps} from "./effects/components/Effect";
 export type {EffectInstanceSetting} from "./effects/EffectInstance";
 export type {EffekseerSettings, EffectLoadingPackage} from "./effects/EffekseerManager";
 

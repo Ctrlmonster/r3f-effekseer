@@ -10,7 +10,7 @@ import {
   effekseerManager,
   EffekseerManager,
   EffekseerReactContext,
-  Effekt
+  Effect
 } from "../../lib";
 
 import blockUrl from "../../../Resources/block.efk?url";
@@ -68,7 +68,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="orange"/>
 
           <Suspense fallback={null}>
-            <Effekt ref={laser2Ref}
+            <Effect ref={laser2Ref}
                     name={"Laser02"}
                     src={laser2Url}
                     debug={true}
@@ -89,7 +89,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="hotpink"/>
 
           <Suspense fallback={null}>
-            <Effekt ref={laserRef}
+            <Effect ref={laserRef}
                     name={"Laser01"}
                     src={laser1Url}
                     debug={true}
@@ -108,7 +108,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
           <meshStandardMaterial color="gray"/>
 
           <Suspense fallback={null}>
-            <Effekt ref={blockRef}
+            <Effect ref={blockRef}
                     name={"block"}
                     src={blockUrl}
                     playOnMount={true}

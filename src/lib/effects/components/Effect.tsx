@@ -35,7 +35,7 @@ export type EffectProps = {
 }
 
 
-export const Effekt = forwardRef(({
+export const Effect = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
                                     speed, visible, randomSeed, targetPosition,
