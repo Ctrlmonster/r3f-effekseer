@@ -12,8 +12,8 @@ advanced, free to use **Editor**, that you can use to create you own Effects.
 ## Adding Effects to your Scene:
 Effects are loaded from `.etf` files, which is the effects 
 format of Effekseer. You can export these yourself from the 
-Effekseer Editor [add link here], or download some from the
-collection of sample effects [add link here].
+[Effekseer Editor](https://effekseer.github.io/en/), or download some from the
+collection of [sample effects](https://effekseer.github.io/en/contribute.html).
 
 ```tsx
 function MyScene() {
