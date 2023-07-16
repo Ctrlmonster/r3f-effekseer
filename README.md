@@ -89,7 +89,7 @@ You can also set settings via **props**. This is full list of props
 available on the `<Effect/>` component:
 
 ```ts
-export type EffectProps = {
+type EffectProps = {
   // required props for initialization / loading
   name: string,
   src: string,
