@@ -120,11 +120,11 @@ type EffectProps = {
 
 ```
 
-## The Parent Class: `<Effekseer>` & EffekseerManager
+## The Parent: `<Effekseer>` & EffekseerManager
 
 The `<Effekseer>` parent component provides its children with the React context to spawn effects.
 It also forwards a ref to the `EffekseerManager` **singleton**.
-This class handles the initialization of the **wasm runtime** and is there
+This object handles the initialization of the **wasm runtime** and is there
 to **load/unload effects**. It als offers a **limited imperative API** to play
 effects, next to the `EffectInstance` class.
 ```js
