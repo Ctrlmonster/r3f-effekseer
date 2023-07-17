@@ -3,7 +3,7 @@
 This Library aims to provide React bindings for the **WebGL + WASM** runtime
 of [**Effekseer**](https://effekseer.github.io/en/). Effekseer is a mature **Particle Effect Creation Tool**,
 which supports major game engines, is used in many commercial games, and includes its
-own free to use editor, which you can use to create to your effects!
+own free to use editor, which you can use to create to your own effects!
  
 ---------
 
