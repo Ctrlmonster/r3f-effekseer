@@ -1,10 +1,13 @@
 # Effekseer for React-Three-Fiber 🎆💥
 
-React bindings for the **WebGL + WASM** runtime
-of [**Effekseer**](https://effekseer.github.io/en/) - a mature **VFX creation tool**
+This Library aims to provide React bindings for the **WebGL + WASM** runtime
+of [**Effekseer**](https://effekseer.github.io/en/). Effekseer is a mature **Particle Effect Creation Tool**,
+which supports major game engines, is used in many commercial games, and includes its
+own free to use editor, which you can use to create to your effects!
+ 
 ---------
 
-### TODO: Section on how to install
+> TODO: Section on how to install
 
 ---------
 
@@ -151,7 +154,7 @@ The parent component also forwards a ref to the `effekseerManager` **singleton**
 This object holds all loaded effects, handles the initialization of the wasm runtime, 
 loading/unloading of effects and offers a limited imperative API to play effects, 
 next to the `EffectInstance` class.
-```
+```js
 const effectHandle = effectManager.playEffect(name); // play an effect
 effectHandle.setSpeed(0.5); // fleeting effect handle, becomes invalid once effect has finished.
 // view all loaded effects
