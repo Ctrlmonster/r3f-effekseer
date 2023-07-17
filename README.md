@@ -172,6 +172,7 @@ useFrame((state, delta) => {
 ```
 **Note**: Setting `ejectRenderer` to true will also be required if
 you plan on rendering effekseer effects as a postprocessing effect.
+
 -----------------
 ## Preloading Runtime & Effects
 You can start preloading via the manager. Preloading the runtime means it will already
