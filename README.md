@@ -1,9 +1,7 @@
 # Effekseer for React-Three-Fiber 🎆💥
 
-This Library provides r3f bindings to the **WebGL + WASM** runtime
-of [**Effekseer**](https://effekseer.github.io/en/). Effekseer is a mature **VFX creation tool**,
-which includes support for many Game Engines and has its own
-advanced, free to use Editor, that you can use to create you own Effects.
+React bindings for the **WebGL + WASM** runtime
+of [**Effekseer**](https://effekseer.github.io/en/) - a mature **VFX creation tool**
 ---------
 
 ### TODO: Section on how to install
