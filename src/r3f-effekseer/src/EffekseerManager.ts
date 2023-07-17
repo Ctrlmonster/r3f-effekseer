@@ -1,6 +1,7 @@
-import wasmPath from "./effekseer/effekseer.wasm?url";
+import wasmPath from "../vendor/effekseer.wasm?url";
 import {Camera, Clock, Scene, WebGLRenderer} from "three";
-import {EffekseerContext, EffekseerEffect} from "effekseer-native";
+import {EffectInstance, effekseer} from "../";
+import {EffekseerContext, EffekseerEffect} from "src/r3f-effekseer/vendor/effekseer-native";
 
 export type EffectLoadingPackage = {
   name: string, path: string, scale: number,
@@ -48,6 +49,7 @@ export class EffekseerManager {
   #isPreloadingRuntime: boolean = false;
 
   // -------------------------------------------------------------------------------------------------------------------
+  _effectInstances: Record<string, Set<EffectInstance>> = {};
 
 
   async loadEffect(name: string, path: string, scale: number,
@@ -57,7 +59,6 @@ export class EffekseerManager {
 
     // Check if the manager is initialized, if it isn't this effect will be automatically
     // loaded as soon the manager is ready.
-
 
     if (this.initialized) {
       return new Promise<EffekseerEffect>((resolve, reject) => {
@@ -238,10 +239,11 @@ export class EffekseerManager {
     this.context = effekseer.createContext();
     this.#isPreloadingRuntime = false;
 
-    this.context.init(this.gl!.getContext(), this.settings ?? undefined);
+
+    this.context!.init(this.gl!.getContext(), this.settings ?? undefined);
 
     if (this.fastRenderMode) {
-      this.context.setRestorationOfStatesFlag(false);
+      this.context!.setRestorationOfStatesFlag(false);
     }
     // load the effects that are already waiting
     for (const effectInitPackage of this.effectLoadingQueue) {
@@ -286,11 +288,40 @@ export class EffekseerManager {
   }
 
 
-  disposeEffect(name: string) {
+  _registerEffectInstance(instance: EffectInstance) {
+    const {name} = instance;
+    if (this._effectInstances[name]) {
+      this._effectInstances[name].add(instance);
+    } else {
+      this._effectInstances[name] = new Set([instance]);
+    }
+  }
+
+  _removeEffectInstance(instance: EffectInstance) {
+    const {name} = instance;
+    const allInstances = this._effectInstances[name];
+    allInstances.delete(instance);
+    if (allInstances.size === 0) {
+      delete this._effectInstances[name];
+    }
+  }
+
+  /**
+   *
+   * @param name - name of the effect
+   * @param force - if the force flag is specified,
+   * the system won't check if any EffectInstances using that effect are left
+   */
+  disposeEffect(name: string, force = false) {
     if (this.effects && this.effects[name]) {
-      this.context?.releaseEffect(this.effects[name]);
-      delete this.effects[name];
-      this.#setEffects?.(this.effects);
+      // before we can remove the effect completely, we
+      // have to check whether any other instances are
+      // still using the effect.
+      if (!this._effectInstances[name] || force) {
+        this.context?.releaseEffect(this.effects[name]);
+        delete this.effects[name];
+        this.#setEffects?.(this.effects);
+      }
     } else {
       console.warn(`Effect ${name} not found`);
     }

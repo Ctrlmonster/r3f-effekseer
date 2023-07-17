@@ -23,7 +23,6 @@
   },
   "include": [
     "src",
-    "src/r3f-effekseer/effekseer"
   ],
   "references": [
     {

@@ -33,7 +33,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var effekseer = function () {
+export var effekseer = function () {
   var Module = {};
   var Core = {};
   var _imageCrossOrigin = "";
@@ -613,7 +613,7 @@ var effekseer = function () {
 
   var _loadResource = function _loadResource(path, onload, onerror) {
 
-    splitted_path = path.split('?');
+    const splitted_path = path.split('?');
     var ext_path = path;
     if (splitted_path.length >= 2) {
       ext_path = splitted_path[0];

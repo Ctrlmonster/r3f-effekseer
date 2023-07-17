@@ -49,7 +49,9 @@ export const Effect = forwardRef(({
   const worldPos = useRef(new Vector3());
   const worldScale = useRef(new Vector3());
 
-  const {manager} = useContext(EffekseerReactContext); // do you add an error if the context is missing?
+  const {manager, effects} = useContext(EffekseerReactContext); // do you add an error if the context is missing?
+
+  console.log(effects);
 
   const effect = suspend(async () => {
     return await manager.loadEffect(name, src, 1, onload, onerror, redirect);
@@ -60,10 +62,13 @@ export const Effect = forwardRef(({
 
 
   useEffect(() => {
+    manager._registerEffectInstance(effectInstance);
+
     if (playOnMount) {
       effectInstance?.play();
     }
     return () => {
+      manager._removeEffectInstance(effectInstance);
       if (dispose != null) {
         manager.disposeEffect(name);
       }

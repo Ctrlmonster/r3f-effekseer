@@ -1,23 +1,19 @@
+export {effekseer} from "./vendor/effekseer";
+
 // classes / objects
-export {EffekseerReactContext} from "./EffekseerReactContext";
-export {EffectInstance} from "./EffectInstance";
-export {EffekseerManager, effekseerManager} from "./EffekseerManager";
+export {EffekseerReactContext} from "./src/EffekseerReactContext";
+export {EffectInstance} from "./src/EffectInstance";
+export {EffekseerManager, effekseerManager} from "./src/EffekseerManager";
 
 // effekseer native type exports
-export type {EffekseerContext, EffekseerEffect, EffekseerHandle} from "effekseer-native"
-
-// exporting effekseer setup object - doesn't work
-import {effekseer as effekseerSetup} from "./effekseer/effekseer.src";
-
-export const effekseer = effekseerSetup();
-console.log(effekseer); // TODO: Recursion error if effekseer.js isn't import via <script> first
+export type {EffekseerContext, EffekseerEffect, EffekseerHandle} from "src/r3f-effekseer/vendor/effekseer-native";
 
 // react components
-export {Effekseer} from "./components/EffekseerParent";
-export {Effect} from "./components/Effect";
+export {Effekseer} from "./src/components/EffekseerParent";
+export {Effect} from "./src/components/Effect";
 
 // types
-export type {EffectProps} from "./components/Effect";
-export type {EffectInstanceSetting} from "./EffectInstance";
-export type {EffekseerSettings, EffectLoadingPackage} from "./EffekseerManager";
+export type {EffectProps} from "./src/components/Effect";
+export type {EffectInstanceSetting} from "./src/EffectInstance";
+export type {EffekseerSettings, EffectLoadingPackage} from "./src/EffekseerManager";
 
