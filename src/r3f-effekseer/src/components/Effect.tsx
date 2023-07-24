@@ -51,8 +51,6 @@ export const Effect = forwardRef(({
 
   const {manager, effects} = useContext(EffekseerReactContext); // do you add an error if the context is missing?
 
-  console.log(effects);
-
   const effect = suspend(async () => {
     return await manager.loadEffect(name, src, 1, onload, onerror, redirect);
   }, [src, name]);
@@ -153,9 +151,9 @@ export const Effect = forwardRef(({
   }, [paused]);
 
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     // we sync the parent transforms every frame here (effect Instance makes dirty checks internally)
-    if (effectInstance) {
+    if (effectInstance && effectInstance.syncedToParent) {
       const pos = group.current.getWorldPosition(worldPos.current);
       effectInstance._setParentPosition(pos.x, pos.y, pos.z);
       effectInstance.setPosition(effectInstance._localPosition[0], effectInstance._localPosition[1], effectInstance._localPosition[2]);

@@ -1,7 +1,7 @@
 import wasmPath from "../vendor/effekseer.wasm?url";
 import {Camera, Clock, Scene, WebGLRenderer} from "three";
 import {EffectInstance, effekseer} from "../";
-import {EffekseerContext, EffekseerEffect} from "src/r3f-effekseer/vendor/effekseer-native";
+import {EffekseerContext, EffekseerEffect, EffekseerHandle} from "src/r3f-effekseer/vendor/effekseer-native";
 
 export type EffectLoadingPackage = {
   name: string, path: string, scale: number,
@@ -48,8 +48,35 @@ export class EffekseerManager {
   #setEffects: ((effects: Record<string, EffekseerEffect>) => void) | null = null;
   #isPreloadingRuntime: boolean = false;
 
-  // -------------------------------------------------------------------------------------------------------------------
   _effectInstances: Record<string, Set<EffectInstance>> = {};
+
+
+  runningInstances: Set<EffectInstance> = new Set();
+
+  // ===================================================================================================================
+
+
+
+  updateEffects(dt: number) {
+    for (const instance of this.runningInstances) {
+      if (instance.paused) continue;
+
+      // the effect is still running
+      if (instance._latestHandle?.exists) {
+        instance._time += dt;
+      }
+      // the effect just finished
+      else {
+        instance._time = 0;
+        instance._currentCompletionCallback?.();
+        instance._currentCompletionCallback = null;
+        this.runningInstances.delete(instance);
+      }
+    }
+  }
+
+
+
 
 
   async loadEffect(name: string, path: string, scale: number,
@@ -271,18 +298,20 @@ export class EffekseerManager {
     this.initialized = false;
   }
 
-  render(delta: number) {
+
+  update(dt: number, render: boolean) {
     if (this.context) {
-      this.context.update(delta * 60.0); // Also check if time is passed correctly here
-      //this.context.update(this.clock.getDelta() * 60.0); <- this is from the three.js demo
+      this.context.update(dt * 60.0);
+      this.updateEffects(dt);
 
-      this.context.setProjectionMatrix(this.camera!.projectionMatrix.elements as unknown as Float32Array);
-      this.context.setCameraMatrix(this.camera!.matrixWorldInverse.elements as unknown as Float32Array);
-      this.context.draw();
+      if (render) {
+        this.context.setProjectionMatrix(this.camera!.projectionMatrix.elements as unknown as Float32Array);
+        this.context.setCameraMatrix(this.camera!.matrixWorldInverse.elements as unknown as Float32Array);
+        this.context.draw();
 
-      // Effekseer makes states dirty. So reset three.js states
-      if (this.fastRenderMode) {
-        this.gl!.resetState();
+        if (this.fastRenderMode) {
+          this.gl!.resetState();
+        }
       }
     }
   }

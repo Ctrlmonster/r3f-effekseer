@@ -7,19 +7,16 @@ import {
   EffekseerReactContext,
   EffekseerSettings
 } from "../../index";
-import {Camera} from "three";
 
 
-export const Effekseer = forwardRef(({children, settings, ejectRenderer, camera}: {
+export const Effekseer = forwardRef(({children, settings, ejectRenderer}: {
   children: ReactNode,
   settings?: EffekseerSettings,
-  camera?: Camera,
   ejectRenderer?: boolean
 }, ref: ForwardedRef<EffekseerManager>) => {
 
   const [effects, setEffects] = useState<Record<string, EffekseerEffect>>({});
-  const {gl, scene, camera: defaultCamera, clock} = useThree(({gl, scene, camera, clock}) => ({gl, scene, camera, clock}));
-  const camera_ = useMemo(() => camera || defaultCamera, [camera, defaultCamera]);
+  const {gl, scene, camera, clock} = useThree(({gl, scene, camera, clock}) => ({gl, scene, camera, clock}));
 
   useImperativeHandle(ref, () => effekseerManager, []);
   useLayoutEffect(() => {
@@ -28,7 +25,7 @@ export const Effekseer = forwardRef(({children, settings, ejectRenderer, camera}
     effekseerManager.init(
       gl,
       scene,
-      camera_,
+      camera,
       clock,
       settings || null,
       setEffects
@@ -44,10 +41,10 @@ export const Effekseer = forwardRef(({children, settings, ejectRenderer, camera}
     // connecting the simulation to r3f's render loop,
     // it will now get updated every frame
     if (!ejectRenderer) {
-      gl.render(scene, camera_);
-      effekseerManager.render(delta);
+      gl.render(scene, camera);
     }
-  }, 1);
+    effekseerManager.update(delta, !ejectRenderer);
+  }, ejectRenderer ? undefined : 1);
 
 
   return (

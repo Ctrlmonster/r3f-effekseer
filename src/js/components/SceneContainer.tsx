@@ -56,16 +56,24 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
 
 
   return (
-    <Effekseer ref={managerRef}>
-      <color attach="background" args={[color]}/>
+    <Effekseer ref={managerRef} ejectRenderer={true}>
+      {<color attach="background" args={[color]}/>}
 
       <>
         <mesh
-          position={[0, 0, -9]}
+          position={[-5, 0, 0]}
           castShadow={true} receiveShadow={true}
-          onClick={() => laser2Ref.current?.play()}>
+          onClick={async () => {
+            const p = laser2Ref.current?.play();
+
+            console.log(p);
+
+            await p;
+            console.log("%ceffect finished", "color: limegreen");
+          }
+          }>
           <sphereGeometry/>
-          <meshStandardMaterial color="orange"/>
+          <meshStandardMaterial color="orange" emissiveIntensity={5}/>
 
           <Suspense fallback={null}>
             <Effect ref={laser2Ref}
@@ -73,10 +81,10 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
                     src={laser2Url}
                     debug={true}
                     dispose={null}
-                    position={position}
                     rotation={rotation}
+                    position={position}
                     scale={[0.5, 0.5, 0.5]}
-                    speed={0.1}
+                    speed={1}
             />
           </Suspense>
         </mesh>
@@ -116,7 +124,6 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
                     position={position}
                     rotation={rotation}
                     scale={[.1, .1, .1]}
-                    color={[255, 0, 0, 255]}
             />
           </Suspense>
         </mesh>

@@ -164,10 +164,11 @@ console.log(effectManager.effects)
 ### Overtaking the renderer:
 If you decide to eject the default effekseer renderer, you can render yourself like this (it's
 what `<Effekseer>` does internally):
+
 ```js
 useFrame((state, delta) => {
   state.gl.render();
-  effekseerManager.render(delta);
+  effekseerManager.update(delta);
 }, 1); 
 ```
 **Note**: Setting `ejectRenderer` to true will also be required if

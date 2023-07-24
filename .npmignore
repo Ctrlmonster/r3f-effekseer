@@ -1,0 +1,6 @@
+# Files and directories to be ignored when publishing to NPM
+node_modules/
+dist/
+build/
+examples/
+tests/

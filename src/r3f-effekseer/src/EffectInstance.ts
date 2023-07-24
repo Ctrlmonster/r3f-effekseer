@@ -19,7 +19,7 @@ export type EffectInstanceSetting = "paused"
 
 export class EffectInstance {
   static #idCounter = 0;
-  id = EffectInstance.#idCounter++;
+  readonly id = EffectInstance.#idCounter++;
 
   // we got parent transforms, which can optionally be set to have
   // transform own relative to parent. The React Component uses these
@@ -51,10 +51,30 @@ export class EffectInstance {
   #activateSettingByName = new Map<EffectInstanceSetting, (...args: any[]) => void>();
   #paused = false;
 
+  // whether the effect's transforms are synced with the parents
+  syncedToParent = true;
+
+  _time = 0;
+
+  #currentCompletionPromise: Promise<void> | null = null;
+  _currentCompletionCallback: (() => void) | null = null;
+
+
+  get running() {
+    return this._latestHandle?.exists;
+  }
+
   // -------------------------------------------------------------------------------------------------------------------
 
   constructor(public name: string, public effect: EffekseerEffect, public manager: EffekseerManager) {
   }
+
+  // -------------------------------------------------------------------------------------------------------------------
+
+  addCompletionCallback(callback: () => void) {
+
+  }
+
 
   // -------------------------------------------------------------------------------------------------------------------
   // Playback methods
@@ -66,18 +86,39 @@ export class EffectInstance {
    * There is also an optional parameter to let the previous running instance of this effect
    * continue while starting the effect new. You are not able to interact with the previous
    * running instance in any way, after calling play().
-   * @param continuePrevious If true, this will not stop the previous running effect
+   * @param playSettings - Optional settings for the play() method
+   * @param playSettings.continuePrevious - If true, the previous running instance of this effect will continue playing
+   * @param playSettings.stopSyncingWithParent - If true, the effect will no longer sync its transforms with the parent
+   * after the effect has started playing.
    */
-  play(continuePrevious: boolean = false) {
+  async play(playSettings?: { stopSyncingWithParent: boolean }) {
+    const {stopSyncingWithParent} = playSettings || {};
+
     if (this.manager) {
       this.#paused = false;
-      !continuePrevious && this._latestHandle?.stop();
+      this.syncedToParent = !stopSyncingWithParent;
+
+      // finish the last run of this effect
+      if (this._latestHandle?.exists) {
+        this._currentCompletionCallback?.();
+        this._currentCompletionCallback = null;
+        this._latestHandle?.stop();
+      }
+      // create a new promise for this run
+      this.#currentCompletionPromise = new Promise((resolve) => {
+        this._currentCompletionCallback = resolve;
+      });
+
+      this.manager.runningInstances.add(this);
+
+      // get a new handle
       this._latestHandle = this.manager.playEffect(this.name) || null;
-      // whenever we play the effect and get a new handle, we re-run all the setters
-      // that the user specified, on the new handle
+
+      // Re-run all the setters that the user specified for this new handle
       for (const activateSetting of this.#activateSettingByName.values()) {
         activateSetting();
       }
+      return this.#currentCompletionPromise;
     }
   }
 
@@ -107,6 +148,7 @@ export class EffectInstance {
    * Stop this effect instance.
    */
   stop() {
+    this.manager.runningInstances.delete(this);
     this._latestHandle?.stop();
   }
 
@@ -114,6 +156,7 @@ export class EffectInstance {
    * Stop the root node of this effect instance.
    */
   stopRoot() {
+    this.manager.runningInstances.delete(this);
     this._latestHandle?.stopRoot();
   }
 
