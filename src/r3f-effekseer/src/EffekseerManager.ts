@@ -49,16 +49,14 @@ export class EffekseerManager {
   #isPreloadingRuntime: boolean = false;
 
   _effectInstances: Record<string, Set<EffectInstance>> = {};
-
-
-  runningInstances: Set<EffectInstance> = new Set();
+  _runningInstances: Set<EffectInstance> = new Set();
 
   // ===================================================================================================================
 
 
 
   updateEffects(dt: number) {
-    for (const instance of this.runningInstances) {
+    for (const instance of this._runningInstances) {
       if (instance.paused) continue;
 
       // the effect is still running
@@ -70,7 +68,7 @@ export class EffekseerManager {
         instance._time = 0;
         instance._currentCompletionCallback?.();
         instance._currentCompletionCallback = null;
-        this.runningInstances.delete(instance);
+        this._runningInstances.delete(instance);
       }
     }
   }
@@ -115,7 +113,6 @@ export class EffekseerManager {
     // pass the success / failure callbacks to the callback that will be
     // executed when the previously started loading process finishes.
     if (this.loadingCallbacksByName.has(name)) {
-      console.log(`effect ${name} is already loading`);
       this.loadingCallbacksByName.get(name)!.push({
         success: () => {
           onload?.();
@@ -134,16 +131,12 @@ export class EffekseerManager {
 
       this.loadingCallbacksByName.set(name, []);
 
-      console.log(`start loading effect ${name}`);
-
       const effect = this.context!.loadEffect(
         path,
         scale,
         // Packaging promise resolve and reject with user callbacks,
         // this way we resolve the promise when the effect is loaded.
         () => {
-          console.log("loading completed", name);
-          console.log(performance.now());
           this.effects[name] = effect;
           onload?.();
           resolve(this.effects[name]);
@@ -207,19 +200,11 @@ export class EffekseerManager {
     if (this.context == null && !this.#isPreloadingRuntime) {
       this.#isPreloadingRuntime = true;
 
-      console.log("Starting to preload wasm runtime now");
-
-      console.log(effekseer);
       effekseer.initRuntime(wasmPath, () => {
         this.#isPreloadingRuntime = false;
-        console.log("PRELOAD COMPLETE");
         // check if this.init() has been called since we started initializing
         if (this.gl && this.#setEffects) {
           this.#completeRuntimeInitialization();
-        } else {
-          console.log(this.gl);
-          console.log(this.#setEffects);
-          console.log("couldn't complete runtime");
         }
       }, () => {
         console.log("Failed to preload effekseer");
@@ -230,7 +215,6 @@ export class EffekseerManager {
 
   init(gl: WebGLRenderer, scene: Scene, camera: Camera, clock: Clock,
        settings: EffekseerSettings | null, setEffects: (effects: Record<string, EffekseerEffect>) => void) {
-    // init your imperative code here
     this.camera = camera;
     this.clock = clock;
     this.gl = gl;
@@ -238,19 +222,14 @@ export class EffekseerManager {
     this.settings = settings;
     this.#setEffects = (effects) => setEffects({...effects});
 
-    console.log("INITIALIZING WASM RUNTIME... ");
-    console.log("CURRENT STATUS:");
-
     // Check whether preloading the runtime is completed. In this case we only need to call complete
     if (this.context) {
-      console.log("-> preloading already finished");
       this.#completeRuntimeInitialization();
       return;
     }
     // If it isn't, check if we preloaded at all. If we didn't start initialization now.
     // If we are preloading and are just not ready, complete will be called on completion
     if (!this.#isPreloadingRuntime) {
-      console.log("-> no preloading found, initializing runtime now...");
       // init and callback can also get separated, so the runTime could also be preloaded
       effekseer.initRuntime(wasmPath, () => {
         this.#completeRuntimeInitialization();
@@ -262,7 +241,6 @@ export class EffekseerManager {
 
 
   #completeRuntimeInitialization() {
-    console.log("completing runtime init");
     this.context = effekseer.createContext();
     this.#isPreloadingRuntime = false;
 

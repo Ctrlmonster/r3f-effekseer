@@ -11,7 +11,7 @@ own free to use editor, which you can use to create to your own effects!
 
 ---------
 
-## Adding Effects to your Scene: `<Effect />`
+## Adding Effects to your Scene: `<Effekt />`
 Effects are loaded from `.etf` files, which is the effects 
 format of Effekseer. You can export these yourself from the 
 Effekseer Editor, or download some from the collection of
@@ -31,7 +31,7 @@ function MyScene() {
 
         {/*Suspense is required for async loading of effect*/}
         <Suspense> 
-          <Effect ref={effectRef}
+          <Effekt ref={effectRef}
                   name={"Laser1"}
                   src={"../assets/Laser1.efk"}
                   playOnMount // start playing as soon effect is ready
@@ -47,19 +47,20 @@ function MyScene() {
 
 ## Controlling Effects imperatively via `EffectInstance`
 
-The `<Effect />` component forwards a ref to an `EffectInstance`. This class gives you a persistent handle
+The `<Effekt />` component forwards a ref to an `EffectInstance`. This class gives you a persistent handle
 to a particular instance of this effect. You can have as many instances
 of one effect as you like. The `EffectInstance` provides you  with an
 imperative api that lets you set a variety of settings supported
 by Effekseer, as well as control playback of the effect. 
 
 Some examples methods:
+
 ```js
-const effect = new EffectInstance(name, path); // or get via <Effect ref={effectRef}> 
-effect.play(); // start a new run of this effect  
+const effect = new EffectInstance(name, path); // or get via <Effekt ref={effectRef}>
 effect.setPaused(true); // pause / unpause this effect
 effect.stop(); // stop the effect from running
 effect.sendTrigger(index); // send trigger to effect (effekseer feature)
+await effect.play(); // start a new run of this effect (returns a promise for completion)
 ```
 
 
@@ -88,7 +89,7 @@ type EffectInstanceSetting = "paused"
   | "targetPosition"
   | "color"
 ```
-You can also set settings via **props** on the `<Effect/>` component. 
+You can also set settings via **props** on the `<Effekt/>` component. 
 This is full list of props available:
 
 ```ts
@@ -121,6 +122,20 @@ type EffectProps = {
 }
 ```
 -------------
+
+## Spawning multiple Instances of the same effect
+
+Any Effect that has been loaded can be spawned multiple times. Either via the `EffectInstance` class,
+or via the `<Effekt />` component. Simply re-use the same name and path, and you will get a new instance each time.
+
+```tsx
+const instance1 = new EffectInstance("Laser1", "../assets/Laser1.efk");
+
+// or via <Effekt /> component
+<Effekt name={"Laser1"} src={"../assets/Laser1.efk"} speed={0.1} />
+<Effekt name={"Laser1"} src={"../assets/Laser1.efk"} position={[0, 2, 0]} />
+```
+
 
 ## The Parent Component: `<Effekseer>`
 
@@ -178,7 +193,7 @@ you plan on rendering effekseer effects as a postprocessing effect.
 ## Preloading Runtime & Effects
 You can start preloading via the manager. Preloading the runtime means it will already
 be available when `<Effekseer>` mounts and preloading effects means they will already
-be available when a `<Effect>` component using this effect mounts.<br/>
+be available when a `<Effekt>` component using this effect mounts.<br/>
 ```js
 effekseerManager.preload(); // Start initializing the wasm runtime before <Effekseer> mounts
 ```
@@ -196,13 +211,13 @@ effekseerManager.preloadEffect(name, path); // will preload runtime automaticall
 ---------------
 
 ## Disable automatic Effect disposal:
-By default, an effect will be disposed when the last `<Effect>` using it unmounts. This means 
-the next time an <Effect> component using that effect mounts, it will have to be loaded again. 
+By default, an effect will be disposed when the last `<Effekt>` using it unmounts. This means 
+the next time an <Effekt> component using that effect mounts, it will have to be loaded again. 
 You can disable this behaviour via setting the **dispose** prop to null. This way effects
 never get disposed automatically. 
 ```jsx
 // Laser1.efk will not be unloaded
-<Effect name={"Laser"} path={"../assets/Laser1.efk"} dispose={null}>
+<Effekt name={"Laser"} path={"../assets/Laser1.efk"} dispose={null}>
 ```
 You can unload the effect yourself via the `effekseerManager`. <br/>
 **Note**: Since effects are stored by name, make sure to give each effect a **unique name**.
@@ -232,13 +247,12 @@ black parts of the particle image are not rendered transparently.
 ## TODOs:
 * Check if all Effekseer Settings are being used in the effekseer.js 
 file, in the same that they were used in effekseer.src.js
-* add effectInstance.play() promise
 * Check if baseDir in manager needs to be settable
 
 ## Next Steps / How to Contribute:
 * The Effekseer render pass needs to be adapted to be compatible
-with the pmndrs PostProcessing lib (see Resources below) - check if 
-it could just include effekseerManger.render()
+with the pmndrs PostProcessing lib (see Resources below) - check the
+`EffekseerRenderPass.tsx` for a wip.
 * Check what kind of additional methods to add to the Manager
 * Check if HMR experience can be improved
 

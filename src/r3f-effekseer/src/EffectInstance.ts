@@ -109,7 +109,7 @@ export class EffectInstance {
         this._currentCompletionCallback = resolve;
       });
 
-      this.manager.runningInstances.add(this);
+      this.manager._runningInstances.add(this);
 
       // get a new handle
       this._latestHandle = this.manager.playEffect(this.name) || null;
@@ -148,7 +148,7 @@ export class EffectInstance {
    * Stop this effect instance.
    */
   stop() {
-    this.manager.runningInstances.delete(this);
+    this.manager._runningInstances.delete(this);
     this._latestHandle?.stop();
   }
 
@@ -156,7 +156,7 @@ export class EffectInstance {
    * Stop the root node of this effect instance.
    */
   stopRoot() {
-    this.manager.runningInstances.delete(this);
+    this.manager._runningInstances.delete(this);
     this._latestHandle?.stopRoot();
   }
 

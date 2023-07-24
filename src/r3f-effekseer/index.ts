@@ -10,10 +10,10 @@ export type {EffekseerContext, EffekseerEffect, EffekseerHandle} from "src/r3f-e
 
 // react components
 export {Effekseer} from "./src/components/EffekseerParent";
-export {Effect} from "./src/components/Effect";
+export {Effekt} from "./src/components/Effekt";
 
 // types
-export type {EffectProps} from "./src/components/Effect";
+export type {EffektProps} from "./src/components/Effekt";
 export type {EffectInstanceSetting} from "./src/EffectInstance";
 export type {EffekseerSettings, EffectLoadingPackage} from "./src/EffekseerManager";
 

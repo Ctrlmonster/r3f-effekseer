@@ -6,7 +6,7 @@ import {suspend} from "suspend-react";
 import {EffectInstance} from "../EffectInstance";
 
 
-export type EffectProps = {
+export type EffektProps = {
   // required props for initialization / loading
   name: string,
   src: string,
@@ -35,14 +35,14 @@ export type EffectProps = {
 }
 
 
-export const Effect = forwardRef(({
+export const Effekt = forwardRef(({
                                     src, name,
                                     position, rotation, scale,
                                     speed, visible, randomSeed, targetPosition,
                                     dynamicInput, color, paused,
                                     playOnMount, dispose, debug,
                                     onerror, onload, redirect,
-                                  }: EffectProps, ref: ForwardedRef<EffectInstance>) => {
+                                  }: EffektProps, ref: ForwardedRef<EffectInstance>) => {
 
 
   const group = useRef<Group>(null!);
@@ -55,18 +55,18 @@ export const Effect = forwardRef(({
     return await manager.loadEffect(name, src, 1, onload, onerror, redirect);
   }, [src, name]);
 
-  const [effectInstance] = useState(new EffectInstance(name, effect, manager));
-  useImperativeHandle(ref, () => effectInstance, []);
+  const [effektInstance] = useState(new EffectInstance(name, effect, manager));
+  useImperativeHandle(ref, () => effektInstance, []);
 
 
   useEffect(() => {
-    manager._registerEffectInstance(effectInstance);
+    manager._registerEffectInstance(effektInstance);
 
     if (playOnMount) {
-      effectInstance?.play();
+      effektInstance?.play();
     }
     return () => {
-      manager._removeEffectInstance(effectInstance);
+      manager._removeEffectInstance(effektInstance);
       if (dispose != null) {
         manager.disposeEffect(name);
       }
@@ -75,96 +75,96 @@ export const Effect = forwardRef(({
 
   useEffect(() => {
     if (position) {
-      effectInstance.setPosition(position[0], position[1], position[2]);
+      effektInstance.setPosition(position[0], position[1], position[2]);
     } else {
-      effectInstance.setPosition(0, 0, 0);
+      effektInstance.setPosition(0, 0, 0);
     }
   }, [position]);
 
   useEffect(() => {
     if (rotation) {
-      effectInstance.setRotation(rotation[0], rotation[1], rotation[2]);
+      effektInstance.setRotation(rotation[0], rotation[1], rotation[2]);
     } else {
-      effectInstance.setRotation(0, 0, 0);
+      effektInstance.setRotation(0, 0, 0);
     }
   }, [rotation]);
 
   useEffect(() => {
     if (scale) {
-      effectInstance.setScale(scale[0], scale[1], scale[2]);
+      effektInstance.setScale(scale[0], scale[1], scale[2]);
     } else {
-      effectInstance.setScale(1, 1, 1);
+      effektInstance.setScale(1, 1, 1);
     }
   }, [scale]);
 
   useEffect(() => {
     if (speed != undefined) {
-      effectInstance.setSpeed(speed);
+      effektInstance.setSpeed(speed);
     } else {
-      effectInstance.setSpeed(1);
+      effektInstance.setSpeed(1);
     }
   }, [speed]);
 
   useEffect(() => {
     if (visible != undefined) {
-      effectInstance.setVisible(visible);
+      effektInstance.setVisible(visible);
     } else {
-      effectInstance.setVisible(true);
+      effektInstance.setVisible(true);
     }
   }, [visible]);
 
   useEffect(() => {
     if (randomSeed != undefined) {
-      effectInstance.setRandomSeed(randomSeed);
+      effektInstance.setRandomSeed(randomSeed);
     } else {
-      effectInstance.dropSetting("randomSeed");
+      effektInstance.dropSetting("randomSeed");
     }
   }, [randomSeed]);
 
   useEffect(() => {
     if (targetPosition != undefined) {
-      effectInstance.setTargetPosition(targetPosition[0], targetPosition[1], targetPosition[2]);
+      effektInstance.setTargetPosition(targetPosition[0], targetPosition[1], targetPosition[2]);
     } else {
-      effectInstance.dropSetting("targetPosition");
+      effektInstance.dropSetting("targetPosition");
     }
   }, [targetPosition]);
 
   useEffect(() => {
     if (dynamicInput != undefined) {
       for (let i = 0; i < dynamicInput.length; i++)
-        effectInstance.setDynamicInput(i, dynamicInput[i]);
+        effektInstance.setDynamicInput(i, dynamicInput[i]);
     } else {
-      effectInstance.dropSetting("dynamicInput");
+      effektInstance.dropSetting("dynamicInput");
     }
   }, [dynamicInput]);
 
   useEffect(() => {
     if (color != undefined) {
-      effectInstance.setColor(color[0], color[1], color[2], color[3]);
+      effektInstance.setColor(color[0], color[1], color[2], color[3]);
     } else {
-      effectInstance.dropSetting("color");
+      effektInstance.dropSetting("color");
     }
   }, [color]);
 
   useEffect(() => {
-    effectInstance.setPaused(!!paused);
+    effektInstance.setPaused(!!paused);
   }, [paused]);
 
 
   useFrame((_, delta) => {
     // we sync the parent transforms every frame here (effect Instance makes dirty checks internally)
-    if (effectInstance && effectInstance.syncedToParent) {
+    if (effektInstance && effektInstance.syncedToParent) {
       const pos = group.current.getWorldPosition(worldPos.current);
-      effectInstance._setParentPosition(pos.x, pos.y, pos.z);
-      effectInstance.setPosition(effectInstance._localPosition[0], effectInstance._localPosition[1], effectInstance._localPosition[2]);
+      effektInstance._setParentPosition(pos.x, pos.y, pos.z);
+      effektInstance.setPosition(effektInstance._localPosition[0], effektInstance._localPosition[1], effektInstance._localPosition[2]);
 
       const rot = group.current.rotation;
-      effectInstance._setParentRotation(rot.x, rot.y, rot.z);
-      effectInstance.setRotation(effectInstance._localRotation[0], effectInstance._localRotation[1], effectInstance._localRotation[2]);
+      effektInstance._setParentRotation(rot.x, rot.y, rot.z);
+      effektInstance.setRotation(effektInstance._localRotation[0], effektInstance._localRotation[1], effektInstance._localRotation[2]);
 
       const scale = group.current.getWorldScale(worldScale.current);
-      effectInstance._setParentScale(scale.x, scale.y, scale.z);
-      effectInstance.setScale(effectInstance._localScale[0], effectInstance._localScale[1], effectInstance._localScale[2]);
+      effektInstance._setParentScale(scale.x, scale.y, scale.z);
+      effektInstance.setScale(effektInstance._localScale[0], effektInstance._localScale[1], effektInstance._localScale[2]);
     }
   });
 
