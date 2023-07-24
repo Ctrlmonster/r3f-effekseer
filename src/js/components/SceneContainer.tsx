@@ -56,7 +56,7 @@ export function SceneContainer({setEffectNames}: { setEffectNames: (effects: str
 
 
   return (
-    <Effekseer ref={managerRef} ejectRenderer={true}>
+    <Effekseer ref={managerRef}>
       {<color attach="background" args={[color]}/>}
 
       <>
